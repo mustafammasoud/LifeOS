@@ -4,6 +4,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using LifeOS.Desktop.Navigation;
 using LifeOS.Desktop.ViewModels.Pages;
 using Material.Icons;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace LifeOS.Desktop.ViewModels;
 
@@ -48,8 +49,7 @@ public sealed partial class MainWindowViewModel : ObservableObject
 
     private ObservableObject ResolvePage(PageKey key) => key switch
     {
-        PageKey.Dashboard => _services.GetService(typeof(DashboardViewModel)) as ObservableObject
-                             ?? new DashboardViewModel(),
+        PageKey.Dashboard => (ObservableObject)_services.GetRequiredService(typeof(DashboardViewModel)),
         _ => new ComingSoonViewModel(key.ToString())
     };
 }

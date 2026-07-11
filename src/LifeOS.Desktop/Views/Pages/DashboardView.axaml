@@ -1,0 +1,47 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:LifeOS.Desktop.ViewModels.Pages"
+             xmlns:tasks="using:LifeOS.Domain.Tasks"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="LifeOS.Desktop.Views.Pages.DashboardView"
+             x:DataType="vm:DashboardViewModel">
+
+    <StackPanel Margin="24" Spacing="16" MaxWidth="600">
+
+        <StackPanel Spacing="4">
+            <TextBlock Text="{Binding Greeting}" FontSize="28" FontWeight="SemiBold" />
+            <TextBlock Text="{Binding TodayLabel}" FontSize="14"
+                       Foreground="{DynamicResource LifeOS.Brush.TextSecondary}" />
+        </StackPanel>
+
+        <Border Classes="Card">
+            <StackPanel Spacing="12">
+                <TextBlock Text="Today's Tasks" FontWeight="SemiBold" FontSize="16" />
+
+                <DockPanel>
+                    <Button DockPanel.Dock="Right" Content="Add"
+                            Command="{Binding AddTaskCommand}" Margin="8,0,0,0" />
+                    <TextBox Text="{Binding NewTaskTitle}" Watermark="New task..." />
+                </DockPanel>
+
+                <ItemsControl ItemsSource="{Binding TodayTasks}">
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate x:DataType="tasks:TaskItem">
+                            <DockPanel Margin="0,4">
+                                <CheckBox DockPanel.Dock="Left"
+                                          IsChecked="{Binding IsCompleted}"
+                                          Command="{Binding $parent[ItemsControl].((vm:DashboardViewModel)DataContext).CompleteTaskCommand}"
+                                          CommandParameter="{Binding}" />
+                                <TextBlock Text="{Binding Title}" VerticalAlignment="Center" Margin="8,0,0,0" />
+                            </DockPanel>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </StackPanel>
+        </Border>
+
+    </StackPanel>
+
+</UserControl>

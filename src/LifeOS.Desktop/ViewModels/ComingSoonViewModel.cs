@@ -1,7 +1,6 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 
-namespace LifeOS.Desktop.ViewModels;
-
+namespace LifeOS.Desktop.ViewModels.Pages;
 
 public partial class ComingSoonViewModel : ObservableObject
 {
