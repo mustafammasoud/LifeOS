@@ -1,0 +1,82 @@
+<ResourceDictionary xmlns="https://github.com/avaloniaui"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <!-- Backgrounds -->
+    <Color x:Key="LifeOS.Color.AppBackground">#0D0D10</Color>
+    <Color x:Key="LifeOS.Color.SidebarBackground">#141417</Color>
+    <Color x:Key="LifeOS.Color.HeaderBackground">#141417</Color>
+    <Color x:Key="LifeOS.Color.CardBackground">#1A1A1F</Color>
+    <Color x:Key="LifeOS.Color.CardBackgroundHover">#212127</Color>
+    <Color x:Key="LifeOS.Color.Border">#26262C</Color>
+
+
+    <!-- Text -->
+    <Color x:Key="LifeOS.Color.TextPrimary">#F2F2F5</Color>
+    <Color x:Key="LifeOS.Color.TextSecondary">#9A9AA5</Color>
+    <Color x:Key="LifeOS.Color.TextTertiary">#6C6C76</Color>
+
+
+    <!-- Accent -->
+    <Color x:Key="LifeOS.Color.Accent">#7C6CF0</Color>
+    <Color x:Key="LifeOS.Color.AccentMuted">#2A2350</Color>
+    <Color x:Key="LifeOS.Color.AccentHover">#8E80F5</Color>
+
+
+    <!-- Semantic -->
+    <Color x:Key="LifeOS.Color.Success">#3DD68C</Color>
+    <Color x:Key="LifeOS.Color.Warning">#F5A623</Color>
+    <Color x:Key="LifeOS.Color.Danger">#F0555C</Color>
+
+
+
+    <!-- Brushes -->
+
+    <SolidColorBrush x:Key="LifeOS.Brush.AppBackground"
+                     Color="{StaticResource LifeOS.Color.AppBackground}" />
+
+    <SolidColorBrush x:Key="LifeOS.Brush.SidebarBackground"
+                     Color="{StaticResource LifeOS.Color.SidebarBackground}" />
+
+    <SolidColorBrush x:Key="LifeOS.Brush.HeaderBackground"
+                     Color="{StaticResource LifeOS.Color.HeaderBackground}" />
+
+    <SolidColorBrush x:Key="LifeOS.Brush.CardBackground"
+                     Color="{StaticResource LifeOS.Color.CardBackground}" />
+
+    <SolidColorBrush x:Key="LifeOS.Brush.CardBackgroundHover"
+                     Color="{StaticResource LifeOS.Color.CardBackgroundHover}" />
+
+    <SolidColorBrush x:Key="LifeOS.Brush.Border"
+                     Color="{StaticResource LifeOS.Color.Border}" />
+
+
+    <SolidColorBrush x:Key="LifeOS.Brush.TextPrimary"
+                     Color="{StaticResource LifeOS.Color.TextPrimary}" />
+
+    <SolidColorBrush x:Key="LifeOS.Brush.TextSecondary"
+                     Color="{StaticResource LifeOS.Color.TextSecondary}" />
+
+    <SolidColorBrush x:Key="LifeOS.Brush.TextTertiary"
+                     Color="{StaticResource LifeOS.Color.TextTertiary}" />
+
+
+    <SolidColorBrush x:Key="LifeOS.Brush.Accent"
+                     Color="{StaticResource LifeOS.Color.Accent}" />
+
+    <SolidColorBrush x:Key="LifeOS.Brush.AccentMuted"
+                     Color="{StaticResource LifeOS.Color.AccentMuted}" />
+
+    <SolidColorBrush x:Key="LifeOS.Brush.AccentHover"
+                     Color="{StaticResource LifeOS.Color.AccentHover}" />
+
+
+    <SolidColorBrush x:Key="LifeOS.Brush.Success"
+                     Color="{StaticResource LifeOS.Color.Success}" />
+
+    <SolidColorBrush x:Key="LifeOS.Brush.Warning"
+                     Color="{StaticResource LifeOS.Color.Warning}" />
+
+    <SolidColorBrush x:Key="LifeOS.Brush.Danger"
+                     Color="{StaticResource LifeOS.Color.Danger}" />
+
+</ResourceDictionary>

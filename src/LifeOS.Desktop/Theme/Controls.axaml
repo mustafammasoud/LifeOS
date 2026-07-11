@@ -1,0 +1,51 @@
+<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+    <!-- Sidebar navigation item -->
+    <Style Selector="ListBoxItem.NavItem">
+        <Setter Property="Padding" Value="12,9" />
+        <Setter Property="Margin" Value="8,2" />
+        <Setter Property="CornerRadius" Value="8" />
+        <Setter Property="Cursor" Value="Hand" />
+    </Style>
+    <Style Selector="ListBoxItem.NavItem:pointerover /template/ ContentPresenter">
+        <Setter Property="Background" Value="{StaticResource LifeOS.Brush.CardBackgroundHover}" />
+    </Style>
+    <Style Selector="ListBoxItem.NavItem:selected /template/ ContentPresenter">
+        <Setter Property="Background" Value="{StaticResource LifeOS.Brush.AccentMuted}" />
+    </Style>
+    <Style Selector="ListBoxItem.NavItem:selected TextBlock">
+        <Setter Property="Foreground" Value="{StaticResource LifeOS.Brush.TextPrimary}" />
+        <Setter Property="FontWeight" Value="SemiBold" />
+    </Style>
+
+    <!-- Generic content card used across Dashboard, Stats, etc. -->
+    <Style Selector="Border.Card">
+        <Setter Property="Background" Value="{StaticResource LifeOS.Brush.CardBackground}" />
+        <Setter Property="BorderBrush" Value="{StaticResource LifeOS.Brush.Border}" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="CornerRadius" Value="12" />
+        <Setter Property="Padding" Value="16" />
+    </Style>
+
+    <!-- Primary accent button -->
+    <Style Selector="Button.Primary">
+        <Setter Property="Background" Value="{StaticResource LifeOS.Brush.Accent}" />
+        <Setter Property="Foreground" Value="White" />
+        <Setter Property="CornerRadius" Value="8" />
+        <Setter Property="Padding" Value="14,8" />
+        <Setter Property="FontWeight" Value="Medium" />
+        <Setter Property="Cursor" Value="Hand" />
+    </Style>
+    <Style Selector="Button.Primary:pointerover /template/ ContentPresenter">
+        <Setter Property="Background" Value="{StaticResource LifeOS.Brush.AccentHover}" />
+    </Style>
+
+    <!-- Page title -->
+    <Style Selector="TextBlock.PageTitle">
+        <Setter Property="FontSize" Value="22" />
+        <Setter Property="FontWeight" Value="SemiBold" />
+        <Setter Property="Foreground" Value="{StaticResource LifeOS.Brush.TextPrimary}" />
+    </Style>
+
+</Styles>

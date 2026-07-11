@@ -1,0 +1,40 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:LifeOS.Desktop.ViewModels"
+        xmlns:mi="using:Material.Icons.Avalonia"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d" d:DesignWidth="1000" d:DesignHeight="600"
+        x:Class="LifeOS.Desktop.Views.MainWindow"
+        x:DataType="vm:MainWindowViewModel"
+        Icon="/Assets/avalonia-logo.ico"
+        Title="LifeOS.Desktop">
+
+    <Design.DataContext>
+        <vm:MainWindowViewModel />
+    </Design.DataContext>
+
+    <Grid ColumnDefinitions="220,*">
+
+        <!-- Sidebar navigation -->
+        <ListBox Grid.Column="0"
+                 ItemsSource="{Binding NavigationItems}"
+                 SelectedItem="{Binding SelectedNavigationItem}">
+            <ListBox.ItemTemplate>
+                <DataTemplate x:DataType="vm:NavigationItemViewModel">
+                    <StackPanel Orientation="Horizontal" Spacing="8">
+                        <mi:MaterialIcon Kind="{Binding Icon}" Width="18" Height="18" />
+                        <TextBlock Text="{Binding Label}" VerticalAlignment="Center" />
+                    </StackPanel>
+                </DataTemplate>
+            </ListBox.ItemTemplate>
+        </ListBox>
+
+        <!-- Current page content -->
+        <ContentControl Grid.Column="1"
+                         Content="{Binding CurrentPage}"
+                         Margin="16" />
+
+    </Grid>
+
+</Window>
