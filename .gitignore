@@ -11,6 +11,7 @@ logs/
 .vs/
 .idea/
 *.DotSettings.user
+.vscode
 
 ## OS
 .DS_Store
