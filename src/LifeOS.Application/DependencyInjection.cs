@@ -1,4 +1,5 @@
 ﻿using FluentValidation;
+using LifeOS.Application.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace LifeOS.Application;
@@ -10,8 +11,7 @@ public static class DependencyInjection
         services.AddValidatorsFromAssembly(typeof(DependencyInjection).Assembly);
         services.AddAutoMapper(typeof(DependencyInjection).Assembly);
 
-        // Use case handlers will be registered here as they are implemented,
-        // e.g. services.AddScoped<ICreateTaskHandler, CreateTaskHandler>();
+        services.AddScoped<ITaskService, TaskService>();
 
         return services;
     }
