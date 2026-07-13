@@ -115,7 +115,7 @@ public sealed partial class StudyViewModel : ObservableObject
 
      private async Task CompleteSessionAsync()
     {
-        _notificationService.Notify("LifeOS", "Pomodoro session finished! 🍅");
+        _notificationService.Notify("LifeOS", " session finished!");
 
         await _studyService.LogSessionAsync(
             SelectedSubject?.Id,

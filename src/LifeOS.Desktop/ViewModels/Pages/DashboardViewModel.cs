@@ -19,6 +19,13 @@ using LifeOS.Infrastructure.Settings;
 
 namespace LifeOS.Desktop.ViewModels.Pages;
 
+public class SearchResultItem
+{
+    public required string Icon { get; init; }
+    public required string Title { get; init; }
+    public required string Subtitle { get; init; }
+}
+
 public sealed partial class DashboardViewModel : ObservableObject
 {
     private readonly ISettingsService _settingsService;
@@ -49,9 +56,38 @@ public sealed partial class DashboardViewModel : ObservableObject
     public ObservableCollection<HabitProgress> TodayHabits { get; } = new();
     public ObservableCollection<GoalProgress> TopGoals { get; } = new();
     public ObservableCollection<ActivityLogEntry> RecentActivity { get; } = new();
+    public ObservableCollection<SearchResultItem> SearchResults { get; } = new();   
 
     [ObservableProperty] private Note? _latestNote;
+    [ObservableProperty] private string _searchText = string.Empty;
+     
+     partial void OnSearchTextChanged(string value) => _ = SearchAsync(value);
+     
+           private async Task SearchAsync(string query)
+      {
+          SearchResults.Clear();
+          if (string.IsNullOrWhiteSpace(query) || query.Length < 2) return;
+      
+          var tasks = await _taskService.GetAllTasksAsync();
+          foreach (var t in tasks.Where(t => t.Title.Contains(query, StringComparison.OrdinalIgnoreCase)).Take(5))
+              SearchResults.Add(new SearchResultItem { Icon = "✅", Title = t.Title, Subtitle = t.IsCompleted ? "Completed task" : "Task" });
+      
+          var notes = await _noteService.GetAllNotesAsync();
+          foreach (var n in notes.Where(n => n.Title.Contains(query, StringComparison.OrdinalIgnoreCase)).Take(5))
+              SearchResults.Add(new SearchResultItem { Icon = "📝", Title = n.Title, Subtitle = "Note" });
+      
+          var goals = await _goalService.GetActiveGoalsAsync();
+          foreach (var g in goals.Where(g => g.Goal.Title.Contains(query, StringComparison.OrdinalIgnoreCase)).Take(5))
+              SearchResults.Add(new SearchResultItem { Icon = "🎯", Title = g.Goal.Title, Subtitle = $"Goal — {g.ProgressPercent}%" });
+      }
 
+       [RelayCommand]
+       private void ClearSearch()
+       {
+           SearchText = string.Empty;
+           SearchResults.Clear();
+       }
+     
     public DashboardViewModel(
         ITaskService taskService, IHabitService habitService, IStudyService studyService,
         IGoalService goalService, INoteService noteService, ICalendarService calendarService,
