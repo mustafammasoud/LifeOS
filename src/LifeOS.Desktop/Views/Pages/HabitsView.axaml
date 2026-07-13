@@ -1,0 +1,47 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:LifeOS.Desktop.ViewModels.Pages"
+             xmlns:habits="using:LifeOS.Application.Habits"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:Class="LifeOS.Desktop.Views.Pages.HabitsView"
+             x:DataType="vm:HabitsViewModel">
+
+    <StackPanel Margin="24" Spacing="16" MaxWidth="600">
+
+        <TextBlock Text="Habits" FontSize="24" FontWeight="SemiBold" />
+
+        <DockPanel>
+            <Button DockPanel.Dock="Right" Content="Add"
+                    Command="{Binding AddHabitCommand}" Margin="8,0,0,0" />
+            <TextBox Text="{Binding NewHabitName}" Watermark="New habit..." />
+        </DockPanel>
+
+        <ItemsControl ItemsSource="{Binding Habits}">
+            <ItemsControl.ItemTemplate>
+                <DataTemplate x:DataType="habits:HabitProgress">
+                    <Border Classes="Card" Margin="0,4">
+                        <DockPanel>
+                            <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" Spacing="8">
+                                <Button Content="{Binding TodayCount}"
+                                        Command="{Binding $parent[ItemsControl].((vm:HabitsViewModel)DataContext).LogProgressCommand}"
+                                        CommandParameter="{Binding}" />
+                                <Button Content="✕"
+                                        Command="{Binding $parent[ItemsControl].((vm:HabitsViewModel)DataContext).DeleteHabitCommand}"
+                                        CommandParameter="{Binding}" />
+                            </StackPanel>
+                            <StackPanel>
+                                <TextBlock Text="{Binding Habit.Name}" FontWeight="SemiBold" />
+                                <TextBlock Text="{Binding CurrentStreak, StringFormat='{}{0} day streak'}"
+                                           Foreground="{DynamicResource LifeOS.Brush.TextSecondary}" FontSize="12" />
+                            </StackPanel>
+                        </DockPanel>
+                    </Border>
+                </DataTemplate>
+            </ItemsControl.ItemTemplate>
+        </ItemsControl>
+
+    </StackPanel>
+
+</UserControl>

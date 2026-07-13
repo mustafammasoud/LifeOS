@@ -1,0 +1,49 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:LifeOS.Desktop.ViewModels.Pages"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="700" d:DesignHeight="600"
+             x:Class="LifeOS.Desktop.Views.Pages.SettingsView"
+             x:DataType="vm:SettingsViewModel">
+
+    <ScrollViewer>
+        <StackPanel Margin="24" Spacing="20" MaxWidth="500">
+
+            <TextBlock Text="Settings" FontSize="24" FontWeight="SemiBold" />
+
+            <Border Classes="Card" Padding="18">
+                <StackPanel Spacing="16">
+
+                    <StackPanel Spacing="6">
+                        <TextBlock Text="Your Name" FontWeight="SemiBold" FontSize="13" />
+                        <TextBox Text="{Binding UserName}" />
+                    </StackPanel>
+
+                    <StackPanel Spacing="6">
+                        <TextBlock Text="Theme" FontWeight="SemiBold" FontSize="13" />
+                        <TextBlock Text="Dark (only theme available)" FontSize="13"
+                                   Foreground="{DynamicResource LifeOS.Brush.TextSecondary}" />
+                    </StackPanel>
+                    <CheckBox IsChecked="{Binding NotificationsEnabled}" Content="Enable notifications" />
+
+                    <StackPanel Spacing="6">
+                        <TextBlock Text="Remind me before events (minutes)" FontWeight="SemiBold" FontSize="13" />
+                        <NumericUpDown Value="{Binding ReminderMinutes}" Minimum="1" Maximum="120" />
+                    </StackPanel>
+
+                    <StackPanel Spacing="6">
+                        <TextBlock Text="Database Location" FontWeight="SemiBold" FontSize="13" />
+                        <TextBlock Text="{Binding DatabasePath}" FontSize="12"
+                                   Foreground="{DynamicResource LifeOS.Brush.TextSecondary}" TextWrapping="Wrap" />
+                    </StackPanel>
+
+                    <Button Content="Save" Command="{Binding SaveCommand}" HorizontalAlignment="Left" />
+
+                </StackPanel>
+            </Border>
+
+        </StackPanel>
+    </ScrollViewer>
+
+</UserControl>

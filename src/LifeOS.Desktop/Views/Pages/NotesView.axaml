@@ -1,0 +1,50 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:LifeOS.Desktop.ViewModels.Pages"
+             xmlns:notes="using:LifeOS.Domain.Notes"
+             xmlns:md="https://github.com/whistyun/Markdown.Avalonia"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="900" d:DesignHeight="600"
+             x:Class="LifeOS.Desktop.Views.Pages.NotesView"
+             x:DataType="vm:NotesViewModel">
+
+    <Grid ColumnDefinitions="220,*" Margin="16">
+
+        <!-- Notes list -->
+        <DockPanel Grid.Column="0" Margin="0,0,12,0">
+            <Button DockPanel.Dock="Top" Content="+ New Note"
+                    Command="{Binding NewNoteCommand}" HorizontalAlignment="Stretch" Margin="0,0,0,8" />
+
+            <ListBox ItemsSource="{Binding Notes}" SelectedItem="{Binding SelectedNote}">
+                <ListBox.ItemTemplate>
+                    <DataTemplate x:DataType="notes:Note">
+                        <TextBlock Text="{Binding Title}" />
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
+        </DockPanel>
+
+        <!-- Editor / Preview (full width, toggled) -->
+        <DockPanel Grid.Column="1" IsVisible="{Binding SelectedNote, Converter={x:Static ObjectConverters.IsNotNull}}">
+
+            <TextBox DockPanel.Dock="Top" Text="{Binding EditTitle}" FontSize="18" Margin="0,0,0,8" />
+
+            <StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal" Spacing="8" Margin="0,8,0,0">
+                <Button Content="Save" Command="{Binding SaveCommand}" />
+                <Button Content="Delete" Command="{Binding DeleteCommand}" />
+                <ToggleButton Content="Preview" IsChecked="{Binding IsPreviewMode}" />
+            </StackPanel>
+
+            <TextBox Text="{Binding EditContent}" AcceptsReturn="True" TextWrapping="Wrap"
+                     FontFamily="Monospace" IsVisible="{Binding !IsPreviewMode}" />
+
+            <ScrollViewer IsVisible="{Binding IsPreviewMode}">
+                <md:MarkdownScrollViewer Markdown="{Binding EditContent}" />
+            </ScrollViewer>
+
+        </DockPanel>
+
+    </Grid>
+
+</UserControl>

@@ -1,3 +1,9 @@
+using LifeOS.Domain.Activity;
+using LifeOS.Domain.Calendar;
+using LifeOS.Domain.Goals;
+using LifeOS.Domain.Habits;
+using LifeOS.Domain.Notes;
+using LifeOS.Domain.Study;
 using LifeOS.Domain.Tasks;
 using Microsoft.EntityFrameworkCore;
 
@@ -8,6 +14,15 @@ public class LifeOSDbContext : DbContext
     public LifeOSDbContext(DbContextOptions<LifeOSDbContext> options) : base(options) { }
 
     public DbSet<TaskItem> Tasks => Set<TaskItem>();
+    public DbSet<Habit> Habits => Set<Habit>();
+    public DbSet<HabitLog> HabitLogs => Set<HabitLog>();
+    public DbSet<Subject> Subjects => Set<Subject>();
+    public DbSet<PomodoroSession> PomodoroSessions => Set<PomodoroSession>();
+    public DbSet<Goal> Goals => Set<Goal>();
+    public DbSet<GoalMilestone> GoalMilestones => Set<GoalMilestone>();
+    public DbSet<Note> Notes => Set<Note>();
+    public DbSet<CalendarEvent> CalendarEvents => Set<CalendarEvent>();
+    public DbSet<ActivityLogEntry> ActivityLog => Set<ActivityLogEntry>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

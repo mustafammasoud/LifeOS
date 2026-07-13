@@ -1,3 +1,4 @@
+using LifeOS.Application.Activity;
 using LifeOS.Domain.Tasks;
 
 namespace LifeOS.Application.Tasks;
@@ -5,8 +6,13 @@ namespace LifeOS.Application.Tasks;
 public sealed class TaskService : ITaskService
 {
     private readonly ITaskRepository _repository;
+    private readonly IActivityLogService _activityLog;
 
-    public TaskService(ITaskRepository repository) => _repository = repository;
+    public TaskService(ITaskRepository repository, IActivityLogService activityLog)
+    {
+        _repository = repository;
+        _activityLog = activityLog;
+    }
 
     public Task<List<TaskItem>> GetTodayTasksAsync() => _repository.GetDueTodayAsync();
 
@@ -33,6 +39,8 @@ public sealed class TaskService : ITaskService
         task.IsCompleted = true;
         task.CompletedAt = DateTime.UtcNow;
         await _repository.UpdateAsync(task);
+
+        await _activityLog.LogAsync("✅", $"Completed \"{task.Title}\"");
     }
 
     public Task DeleteTaskAsync(Guid id) => _repository.DeleteAsync(id);

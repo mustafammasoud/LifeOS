@@ -31,8 +31,7 @@ public sealed partial class MainWindowViewModel : ObservableObject
             new(PageKey.Study, "Study", MaterialIconKind.BookOpenPageVariantOutline),
             new(PageKey.Habits, "Habits", MaterialIconKind.Repeat),
             new(PageKey.Goals, "Goals", MaterialIconKind.FlagOutline),
-            new(PageKey.Calendar, "Calendar", MaterialIconKind.CalendarMonthOutline),
-            new(PageKey.Pomodoro, "Pomodoro", MaterialIconKind.TimerOutline),
+            new(PageKey.Calendar, "Events", MaterialIconKind.CalendarMonthOutline),
             new(PageKey.Notes, "Notes", MaterialIconKind.NoteTextOutline),
             new(PageKey.Statistics, "Statistics", MaterialIconKind.ChartBoxOutline),
             new(PageKey.Settings, "Settings", MaterialIconKind.CogOutline),
@@ -48,8 +47,16 @@ public sealed partial class MainWindowViewModel : ObservableObject
     }
 
     private ObservableObject ResolvePage(PageKey key) => key switch
-    {
-        PageKey.Dashboard => (ObservableObject)_services.GetRequiredService(typeof(DashboardViewModel)),
-        _ => new ComingSoonViewModel(key.ToString())
-    };
+{
+    PageKey.Dashboard => (ObservableObject)_services.GetRequiredService(typeof(DashboardViewModel)),
+    PageKey.Tasks => (ObservableObject)_services.GetRequiredService(typeof(TasksViewModel)),
+    PageKey.Habits => (ObservableObject)_services.GetRequiredService(typeof(HabitsViewModel)),
+    PageKey.Study => (ObservableObject)_services.GetRequiredService(typeof(StudyViewModel)),
+    PageKey.Goals => (ObservableObject)_services.GetRequiredService(typeof(GoalsViewModel)),
+    PageKey.Notes => (ObservableObject)_services.GetRequiredService(typeof(NotesViewModel)),
+    PageKey.Calendar => (ObservableObject)_services.GetRequiredService(typeof(CalendarViewModel)),
+    PageKey.Statistics => (ObservableObject)_services.GetRequiredService(typeof(StatisticsViewModel)),
+    PageKey.Settings => (ObservableObject)_services.GetRequiredService(typeof(SettingsViewModel)),
+    _ => new ComingSoonViewModel(key.ToString())
+};
 }

@@ -1,4 +1,6 @@
-﻿using Microsoft.Extensions.DependencyInjection;
+﻿using LifeOS.Infrastructure.Notifications;
+using LifeOS.Infrastructure.Settings;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace LifeOS.Infrastructure;
 
@@ -6,8 +8,8 @@ public static class DependencyInjection
 {
     public static IServiceCollection AddInfrastructure(this IServiceCollection services)
     {
-        // Future: notification service, file system service, Google Calendar client,
-        // AI assistant client. Kept empty intentionally (YAGNI).
+        services.AddSingleton<INotificationService, CrossPlatformNotificationService>();
+        services.AddSingleton<ISettingsService, SettingsService>();
 
         return services;
     }

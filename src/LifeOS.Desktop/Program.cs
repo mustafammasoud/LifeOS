@@ -65,6 +65,7 @@ internal static class Program
                 services.AddInfrastructure();
                 services.AddPersistence(context.Configuration);
                 services.AddDesktopShell();
+                services.AddHostedService<Services.EventReminderService>();
             });
 
     public static AppBuilder BuildAvaloniaApp() =>

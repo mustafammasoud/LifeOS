@@ -1,0 +1,93 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:LifeOS.Desktop.ViewModels.Pages"
+             xmlns:goals="using:LifeOS.Application.Goals"
+             xmlns:domain="using:LifeOS.Domain.Goals"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="600"
+             x:Class="LifeOS.Desktop.Views.Pages.GoalsView"
+             x:DataType="vm:GoalsViewModel">
+
+    <ScrollViewer>
+        <StackPanel Margin="24" Spacing="20" MaxWidth="650">
+
+            <TextBlock Text="Goals" FontSize="24" FontWeight="SemiBold" />
+
+            <!-- Add Goal -->
+            <Border Classes="Card">
+                <StackPanel Spacing="10">
+                    <TextBox Text="{Binding NewGoalTitle}" Watermark="Goal title..." />
+
+                    <CheckBox IsChecked="{Binding UseMilestones}" Content="Track using milestones" />
+
+                    <TextBox Text="{Binding MilestonesInput}"
+                             Watermark="Milestone 1, Milestone 2, Milestone 3..."
+                             IsVisible="{Binding UseMilestones}" />
+
+                    <CalendarDatePicker SelectedDate="{Binding Deadline}"
+                                        Watermark="Deadline (optional)" />
+
+                    <Button Content="Add Goal" Command="{Binding AddGoalCommand}"
+                            HorizontalAlignment="Left" />
+                </StackPanel>
+            </Border>
+
+            <!-- Goals list -->
+            <ItemsControl ItemsSource="{Binding Goals}">
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate x:DataType="goals:GoalProgress">
+                        <Border Classes="Card" Margin="0,4">
+                            <StackPanel Spacing="8">
+
+                            <DockPanel>
+                                     <Button DockPanel.Dock="Right" Content="✕"
+                                             Command="{Binding $parent[ItemsControl].((vm:GoalsViewModel)DataContext).DeleteGoalCommand}"
+                                             CommandParameter="{Binding}" Margin="4,0,0,0" />
+                                     <TextBlock DockPanel.Dock="Right"
+                                                Text="{Binding ProgressPercent, StringFormat='{}{0}%'}"
+                                                FontWeight="SemiBold" />
+                                     <TextBlock Text="{Binding Goal.Title}" FontWeight="SemiBold" />
+                                 </DockPanel>
+
+                                <DockPanel>
+                                    <TextBlock DockPanel.Dock="Right"
+                                               Text="{Binding ProgressPercent, StringFormat='{}{0}%'}"
+                                               FontWeight="SemiBold" />
+                                    <TextBlock Text="{Binding Goal.Title}" FontWeight="SemiBold" />
+                                </DockPanel>
+
+                                <ProgressBar Minimum="0" Maximum="100" Value="{Binding ProgressPercent}" />
+
+                                <TextBlock Text="{Binding Goal.Deadline, StringFormat='Due {0:MMM d, yyyy}'}"
+                                           IsVisible="{Binding Goal.Deadline, Converter={x:Static ObjectConverters.IsNotNull}}"
+                                           FontSize="12" Foreground="{DynamicResource LifeOS.Brush.TextSecondary}" />
+
+                                <!-- Manual progress slider -->
+                                <DockPanel IsVisible="{Binding Goal.TrackingMode, Converter={x:Static ObjectConverters.Equal}, ConverterParameter={x:Static domain:GoalTrackingMode.Manual}}">
+                                      <Button DockPanel.Dock="Right" Content="Save"
+                                              Command="{Binding $parent[ItemsControl].((vm:GoalsViewModel)DataContext).SetProgressCommand}"
+                                              CommandParameter="{Binding}" Margin="8,0,0,0" />
+                                      <Slider Minimum="0" Maximum="100" Value="{Binding EditPercent}" />
+                                  </DockPanel>
+
+                                <!-- Milestones list -->
+                                <ItemsControl ItemsSource="{Binding Goal.Milestones}"
+                                              IsVisible="{Binding Goal.Milestones.Count}">
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate>
+                                            <CheckBox Content="{Binding Title}" IsChecked="{Binding IsCompleted}" />
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+
+                            </StackPanel>
+                        </Border>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+
+        </StackPanel>
+    </ScrollViewer>
+
+</UserControl>

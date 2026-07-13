@@ -18,6 +18,7 @@
   <ItemGroup>
     <ProjectReference Include="..\LifeOS.Application\LifeOS.Application.csproj" />
     <ProjectReference Include="..\LifeOS.Domain\LifeOS.Domain.csproj" />
+    <ProjectReference Include="..\LifeOS.Infrastructure\LifeOS.Infrastructure.csproj" />
   </ItemGroup>
 
 </Project>

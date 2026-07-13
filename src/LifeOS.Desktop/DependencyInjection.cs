@@ -1,3 +1,4 @@
+using LifeOS.Desktop.Services;
 using LifeOS.Desktop.ViewModels;
 using LifeOS.Desktop.ViewModels.Pages;
 using Microsoft.Extensions.DependencyInjection;
@@ -10,6 +11,16 @@ public static class DependencyInjection
     {
         services.AddSingleton<MainWindowViewModel>();
         services.AddTransient<DashboardViewModel>();
+        services.AddTransient<HabitsViewModel>();
+        services.AddSingleton<StudyViewModel>();
+        services.AddTransient<GoalsViewModel>();
+        services.AddTransient<NotesViewModel>();
+        services.AddTransient<CalendarViewModel>();
+        services.AddTransient<TasksViewModel>();
+        services.AddSingleton<IDialogService, DialogService>();
+        services.AddTransient<StatisticsViewModel>();
+        services.AddTransient<SettingsViewModel>();
+        
 
         return services;
     }

@@ -1,0 +1,141 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:LifeOS.Desktop.ViewModels.Pages"
+             xmlns:ctrl="using:LifeOS.Desktop.Controls"
+             xmlns:mi="using:Material.Icons.Avalonia"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="1000" d:DesignHeight="700"
+             x:Class="LifeOS.Desktop.Views.Pages.StatisticsView"
+             x:DataType="vm:StatisticsViewModel">
+
+    <ScrollViewer>
+        <StackPanel Margin="32" Spacing="28" MaxWidth="900">
+
+            <StackPanel Spacing="2">
+                <TextBlock Text="Statistics" FontSize="28" FontWeight="Bold" />
+                <TextBlock Text="Your progress at a glance" FontSize="13"
+                           Foreground="{DynamicResource LifeOS.Brush.TextSecondary}" />
+            </StackPanel>
+            <!-- Progress rings -->
+            <UniformGrid Columns="3">
+                <ctrl:RingProgress Percentage="{Binding WeeklyTaskCompletionPercent}"
+                                    RingColor="#4ADE80" Label="Weekly Tasks" />
+                <ctrl:RingProgress Percentage="{Binding HabitsCompletionPercent}"
+                                    RingColor="#FB923C" Label="Habits Today" />
+                <ctrl:RingProgress Percentage="{Binding GoalsCompletionPercent}"
+                                    RingColor="#C084FC" Label="Goals Completed" />
+            </UniformGrid>
+
+            <!-- Summary cards -->
+            <UniformGrid Columns="4" Rows="1">
+                <Border Classes="Card" Margin="0,0,10,0" Padding="18" CornerRadius="12">
+                    <StackPanel Spacing="8">
+                        <mi:MaterialIcon Kind="CheckboxMarkedCircleOutline" Width="22" Height="22" Foreground="#4ADE80" />
+                        <TextBlock Text="{Binding TotalTasksCompleted}" FontSize="28" FontWeight="Bold" />
+                        <TextBlock Text="Tasks Completed" FontSize="12" Foreground="{DynamicResource LifeOS.Brush.TextSecondary}" />
+                    </StackPanel>
+                </Border>
+
+                <Border Classes="Card" Margin="0,0,10,0" Padding="18" CornerRadius="12">
+                    <StackPanel Spacing="8">
+                        <mi:MaterialIcon Kind="ClockOutline" Width="22" Height="22" Foreground="#60A5FA" />
+                        <TextBlock Text="{Binding TotalStudyMinutes, StringFormat='{}{0}m'}" FontSize="28" FontWeight="Bold" />
+                        <TextBlock Text="Total Study Time" FontSize="12" Foreground="{DynamicResource LifeOS.Brush.TextSecondary}" />
+                    </StackPanel>
+                </Border>
+
+                <Border Classes="Card" Margin="0,0,10,0" Padding="18" CornerRadius="12">
+                    <StackPanel Spacing="8">
+                        <mi:MaterialIcon Kind="Fire" Width="22" Height="22" Foreground="#FB923C" />
+                        <TextBlock Text="{Binding LongestStreak}" FontSize="28" FontWeight="Bold" />
+                        <TextBlock Text="Longest Streak" FontSize="12" Foreground="{DynamicResource LifeOS.Brush.TextSecondary}" />
+                    </StackPanel>
+                </Border>
+
+                <Border Classes="Card" Padding="18" CornerRadius="12">
+                    <StackPanel Spacing="8">
+                        <mi:MaterialIcon Kind="FlagCheckered" Width="22" Height="22" Foreground="#C084FC" />
+                        <TextBlock Text="{Binding GoalsCompleted}" FontSize="28" FontWeight="Bold" />
+                        <TextBlock Text="Goals Completed" FontSize="12" Foreground="{DynamicResource LifeOS.Brush.TextSecondary}" />
+                    </StackPanel>
+                </Border>
+            </UniformGrid>
+
+            <!-- Weekly tasks -->
+            <Border Classes="Card" Padding="20" CornerRadius="12">
+                <StackPanel Spacing="16">
+                    <StackPanel Orientation="Horizontal" Spacing="8">
+                        <mi:MaterialIcon Kind="ChartBar" Width="18" Height="18" Foreground="#4ADE80" />
+                        <TextBlock Text="Tasks Completed — Last 7 Days" FontWeight="SemiBold" FontSize="15" />
+                    </StackPanel>
+                    <ItemsControl ItemsSource="{Binding WeeklyTasks}">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Grid ColumnDefinitions="40,*,30" Margin="0,6">
+                                    <TextBlock Grid.Column="0" Text="{Binding DayLabel}" FontSize="13"
+                                               Foreground="{DynamicResource LifeOS.Brush.TextSecondary}" VerticalAlignment="Center" />
+                                    <ProgressBar Grid.Column="1" Minimum="0" Maximum="100" Value="{Binding PercentOfMax}"
+                                                 Height="10" CornerRadius="5" Margin="10,0" Foreground="#4ADE80" />
+                                    <TextBlock Grid.Column="2" Text="{Binding Count}" FontSize="13" FontWeight="SemiBold"
+                                               HorizontalAlignment="Right" VerticalAlignment="Center" />
+                                </Grid>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </StackPanel>
+            </Border>
+
+            <!-- Study breakdown -->
+            <Border Classes="Card" Padding="20" CornerRadius="12">
+                <StackPanel Spacing="16">
+                    <StackPanel Orientation="Horizontal" Spacing="8">
+                        <mi:MaterialIcon Kind="BookOpenPageVariantOutline" Width="18" Height="18" Foreground="#60A5FA" />
+                        <TextBlock Text="Study Time by Subject" FontWeight="SemiBold" FontSize="15" />
+                    </StackPanel>
+                    <ItemsControl ItemsSource="{Binding SubjectBreakdown}">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Grid ColumnDefinitions="130,*,55" Margin="0,6">
+                                    <TextBlock Grid.Column="0" Text="{Binding Name}" FontSize="13" VerticalAlignment="Center" />
+                                    <ProgressBar Grid.Column="1" Minimum="0" Maximum="100" Value="{Binding PercentOfMax}"
+                                                 Height="10" CornerRadius="5" Margin="10,0" Foreground="#60A5FA" />
+                                    <TextBlock Grid.Column="2" Text="{Binding Minutes, StringFormat='{}{0}m'}" FontSize="13" FontWeight="SemiBold"
+                                               HorizontalAlignment="Right" VerticalAlignment="Center" />
+                                </Grid>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </StackPanel>
+            </Border>
+
+            <!-- Habit streaks -->
+            <Border Classes="Card" Padding="20" CornerRadius="12">
+                <StackPanel Spacing="16">
+                    <StackPanel Orientation="Horizontal" Spacing="8">
+                        <mi:MaterialIcon Kind="Repeat" Width="18" Height="18" Foreground="#FB923C" />
+                        <TextBlock Text="Habit Streaks" FontWeight="SemiBold" FontSize="15" />
+                    </StackPanel>
+                    <ItemsControl ItemsSource="{Binding HabitStreaks}">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Border Background="{DynamicResource LifeOS.Brush.CardBackgroundHover}"
+                                        CornerRadius="8" Padding="12,8" Margin="0,4">
+                                    <DockPanel>
+                                        <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" Spacing="4">
+                                            <mi:MaterialIcon Kind="Fire" Width="14" Height="14" Foreground="#FB923C" />
+                                            <TextBlock Text="{Binding Streak}" FontSize="13" FontWeight="SemiBold" />
+                                        </StackPanel>
+                                        <TextBlock Text="{Binding Name}" FontSize="13" />
+                                    </DockPanel>
+                                </Border>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </StackPanel>
+            </Border>
+
+        </StackPanel>
+    </ScrollViewer>
+
+</UserControl>

@@ -1,0 +1,53 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:LifeOS.Desktop.ViewModels.Pages"
+             xmlns:tasks="using:LifeOS.Domain.Tasks"
+             xmlns:conv="using:LifeOS.Desktop.Converters"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="600"
+             x:Class="LifeOS.Desktop.Views.Pages.TasksView"
+             x:DataType="vm:TasksViewModel">
+
+    <ScrollViewer>
+        <StackPanel Margin="24" Spacing="16" MaxWidth="650">
+
+            <TextBlock Text="Tasks" FontSize="24" FontWeight="SemiBold" />
+
+            <Border Classes="Card">
+                <StackPanel Spacing="10">
+                    <TextBox Text="{Binding NewTaskTitle}" Watermark="New task..." />
+                    <ComboBox ItemsSource="{Binding PriorityOptions}"
+                              SelectedItem="{Binding NewTaskPriority}" />
+                    <Button Content="Add" Command="{Binding AddTaskCommand}" HorizontalAlignment="Left" />
+                </StackPanel>
+            </Border>
+
+            <ItemsControl ItemsSource="{Binding AllTasks}">
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate x:DataType="tasks:TaskItem">
+                        <Border Classes="Card" Margin="0,4">
+                            <DockPanel>
+                                <Button DockPanel.Dock="Right" Content="Delete"
+                                        Command="{Binding $parent[ItemsControl].((vm:TasksViewModel)DataContext).DeleteTaskCommand}"
+                                        CommandParameter="{Binding}" />
+
+                                <Border DockPanel.Dock="Left" Width="4" CornerRadius="2" Margin="0,0,10,0"
+                                        Background="{Binding Priority, Converter={x:Static conv:PriorityColorConverter.Instance}}" />
+
+                                <CheckBox DockPanel.Dock="Left"
+                                          IsChecked="{Binding IsCompleted}"
+                                          Command="{Binding $parent[ItemsControl].((vm:TasksViewModel)DataContext).ToggleCompleteCommand}"
+                                          CommandParameter="{Binding}" />
+
+                                <TextBlock Text="{Binding Title}" VerticalAlignment="Center" Margin="8,0,0,0" />
+                            </DockPanel>
+                        </Border>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+
+        </StackPanel>
+    </ScrollViewer>
+
+</UserControl>
