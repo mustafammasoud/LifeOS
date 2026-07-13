@@ -14,6 +14,27 @@
 
             <TextBlock Text="Tasks" FontSize="24" FontWeight="SemiBold" />
 
+            <UniformGrid Columns="3">
+                <Border Classes="Card" Margin="0,0,8,0" Padding="14" CornerRadius="10">
+                    <StackPanel Spacing="4">
+                        <TextBlock Text="{Binding TotalCount}" FontSize="20" FontWeight="Bold" />
+                        <TextBlock Text="Total" FontSize="12" Foreground="{DynamicResource LifeOS.Brush.TextSecondary}" />
+                    </StackPanel>
+                </Border>
+                <Border Classes="Card" Margin="0,0,8,0" Padding="14" CornerRadius="10">
+                    <StackPanel Spacing="4">
+                        <TextBlock Text="{Binding CompletedCount}" FontSize="20" FontWeight="Bold" Foreground="#4ADE80" />
+                        <TextBlock Text="Completed" FontSize="12" Foreground="{DynamicResource LifeOS.Brush.TextSecondary}" />
+                    </StackPanel>
+                </Border>
+                <Border Classes="Card" Padding="14" CornerRadius="10">
+                    <StackPanel Spacing="4">
+                        <TextBlock Text="{Binding RemainingCount}" FontSize="20" FontWeight="Bold" Foreground="#FBBF24" />
+                        <TextBlock Text="Remaining" FontSize="12" Foreground="{DynamicResource LifeOS.Brush.TextSecondary}" />
+                    </StackPanel>
+                </Border>
+            </UniformGrid>
+
             <Border Classes="Card">
                 <StackPanel Spacing="10">
                     <TextBox Text="{Binding NewTaskTitle}" Watermark="New task..." />
@@ -35,10 +56,11 @@
                                 <Border DockPanel.Dock="Left" Width="4" CornerRadius="2" Margin="0,0,10,0"
                                         Background="{Binding Priority, Converter={x:Static conv:PriorityColorConverter.Instance}}" />
 
-                                <CheckBox DockPanel.Dock="Left"
-                                          IsChecked="{Binding IsCompleted}"
-                                          Command="{Binding $parent[ItemsControl].((vm:TasksViewModel)DataContext).ToggleCompleteCommand}"
-                                          CommandParameter="{Binding}" />
+                              <CheckBox DockPanel.Dock="Left"
+                                  IsChecked="{Binding IsCompleted}"
+                                  Command="{Binding $parent[ItemsControl].((vm:TasksViewModel)DataContext).ToggleCompleteCommand}"
+                                  CommandParameter="{Binding}"
+                                  IsEnabled="True" />
 
                                 <TextBlock Text="{Binding Title}" VerticalAlignment="Center" Margin="8,0,0,0" />
                             </DockPanel>

@@ -3,6 +3,7 @@ using LifeOS.Domain.Calendar;
 using LifeOS.Domain.Goals;
 using LifeOS.Domain.Habits;
 using LifeOS.Domain.Notes;
+using LifeOS.Domain.Statistics;
 using LifeOS.Domain.Study;
 using LifeOS.Domain.Tasks;
 using Microsoft.EntityFrameworkCore;
@@ -23,6 +24,7 @@ public class LifeOSDbContext : DbContext
     public DbSet<Note> Notes => Set<Note>();
     public DbSet<CalendarEvent> CalendarEvents => Set<CalendarEvent>();
     public DbSet<ActivityLogEntry> ActivityLog => Set<ActivityLogEntry>();
+    public DbSet<DailyStatistics> DailyStatistics => Set<DailyStatistics>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

@@ -3,6 +3,7 @@ using System;
 using LifeOS.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace LifeOS.Persistence.Migrations
 {
     [DbContext(typeof(LifeOSDbContext))]
-    partial class LifeOSDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260713155928_AddStatisticsDate")]
+    partial class AddStatisticsDate
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "10.0.0");
@@ -211,38 +214,6 @@ namespace LifeOS.Persistence.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Notes", (string)null);
-                });
-
-            modelBuilder.Entity("LifeOS.Domain.Statistics.DailyStatistics", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("TEXT");
-
-                    b.Property<DateOnly>("Date")
-                        .HasColumnType("TEXT");
-
-                    b.Property<int>("GoalsCompleted")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<int>("HabitsCompleted")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<int>("StudyMinutes")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<int>("TasksCompleted")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<int>("TasksCreated")
-                        .HasColumnType("INTEGER");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("Date")
-                        .IsUnique();
-
-                    b.ToTable("DailyStatistics");
                 });
 
             modelBuilder.Entity("LifeOS.Domain.Study.PomodoroSession", b =>

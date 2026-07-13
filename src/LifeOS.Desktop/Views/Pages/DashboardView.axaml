@@ -18,48 +18,13 @@
         <StackPanel Margin="24" Spacing="20">
 
             <!-- Header -->
-            <Grid ColumnDefinitions="*,Auto">
-                <StackPanel Grid.Column="0" Spacing="4">
-                    <StackPanel Orientation="Horizontal" Spacing="10">
-                        <Image Source="/Assets/logo.png" Width="28" Height="28" />
-                        <TextBlock Text="{Binding Greeting}" FontSize="28" FontWeight="Bold" VerticalAlignment="Center" />
-                    </StackPanel>
-                    <TextBlock Text="{Binding TodayLabel}" FontSize="14" Foreground="{DynamicResource LifeOS.Brush.TextSecondary}" />
+            <StackPanel Spacing="4">
+                <StackPanel Orientation="Horizontal" Spacing="10">
+                    <Image Source="/Assets/logo.png" Width="28" Height="28" />
+                    <TextBlock Text="{Binding Greeting}" FontSize="28" FontWeight="Bold" VerticalAlignment="Center" />
                 </StackPanel>
-
-               <StackPanel Grid.Column="1" VerticalAlignment="Top">
-    <Border Background="#1C1C22" CornerRadius="10" Width="340" Height="42">
-        <DockPanel Margin="14,0">
-            <mi:MaterialIcon DockPanel.Dock="Left" Kind="Magnify" Width="18" Height="18"
-                              Foreground="{DynamicResource LifeOS.Brush.TextSecondary}"
-                              VerticalAlignment="Center" Margin="0,0,10,0" />
-            <TextBox Text="{Binding SearchText}" Watermark="Search tasks, notes, goals..." BorderThickness="0"
-                     Background="Transparent" FontSize="14" VerticalContentAlignment="Center" />
-                         </DockPanel>
-                     </Border>
-                 
-                                 <Border Background="#1C1C22" CornerRadius="10" Margin="0,6,0,0" Padding="6"
-                     IsVisible="{Binding SearchResults.Count}">
-                 <ItemsControl ItemsSource="{Binding SearchResults}">
-                     <ItemsControl.ItemTemplate>
-                         <DataTemplate>
-                             <Button Command="{Binding $parent[ItemsControl].((vm:DashboardViewModel)DataContext).ClearSearchCommand}"
-                                     HorizontalContentAlignment="Stretch" Background="Transparent" BorderThickness="0"
-                                     Padding="8,6" HorizontalAlignment="Stretch">
-                                 <DockPanel>
-                                     <TextBlock DockPanel.Dock="Left" Text="{Binding Icon}" Margin="0,0,10,0" VerticalAlignment="Center" />
-                                     <StackPanel>
-                                         <TextBlock Text="{Binding Title}" FontSize="13" FontWeight="SemiBold" />
-                                         <TextBlock Text="{Binding Subtitle}" FontSize="11" Foreground="{DynamicResource LifeOS.Brush.TextSecondary}" />
-                                     </StackPanel>
-                                 </DockPanel>
-                             </Button>
-                         </DataTemplate>
-                     </ItemsControl.ItemTemplate>
-                 </ItemsControl>
-             </Border>
-                 </StackPanel>
-            </Grid>
+                <TextBlock Text="{Binding TodayLabel}" FontSize="14" Foreground="{DynamicResource LifeOS.Brush.TextSecondary}" />
+            </StackPanel>
 
             <!-- Quick Stats -->
             <UniformGrid Columns="5">
@@ -104,162 +69,164 @@
                 </Border>
             </UniformGrid>
 
-                           <!-- Tasks + Schedule -->
-                 <Grid ColumnDefinitions="*,*">
-                     <Border Classes="Card" Grid.Column="0" Margin="0,0,8,0" Padding="18" CornerRadius="12">
-                         <StackPanel Spacing="12">
-                             <StackPanel Orientation="Horizontal" Spacing="8">
-                                 <mi:MaterialIcon Kind="CheckboxMarkedCircleOutline" Width="18" Height="18" Foreground="#4ADE80" />
-                                 <TextBlock Text="Today's Tasks" FontWeight="SemiBold" FontSize="15" />
-                             </StackPanel>
-                             <DockPanel>
-                                 <Button DockPanel.Dock="Right" Content="Add" Command="{Binding AddTaskCommand}" Margin="8,0,0,0" />
-                                 <TextBox Text="{Binding NewTaskTitle}" Watermark="New task..." />
-                             </DockPanel>
-                 
-                             <TextBlock Text="No tasks for today " FontSize="13" Foreground="{DynamicResource LifeOS.Brush.TextSecondary}"
-                                        IsVisible="{Binding !TodayTasks.Count}" Margin="0,8" />
-                 
-                             <ItemsControl ItemsSource="{Binding TodayTasks}">
-                                 <ItemsControl.ItemTemplate>
-                                     <DataTemplate x:DataType="tasks:TaskItem">
-                                         <DockPanel Margin="0,4">
-                                             <Border DockPanel.Dock="Left" Width="4" CornerRadius="2" Margin="0,0,8,0" Height="18"
-                                                     Background="{Binding Priority, Converter={x:Static conv:PriorityColorConverter.Instance}}" />
-                                             <CheckBox DockPanel.Dock="Left" IsChecked="{Binding IsCompleted}"
-                                                       Command="{Binding $parent[ItemsControl].((vm:DashboardViewModel)DataContext).CompleteTaskCommand}"
-                                                       CommandParameter="{Binding}" />
-                                             <TextBlock Text="{Binding Title}" VerticalAlignment="Center" Margin="8,0,0,0" />
-                                         </DockPanel>
-                                     </DataTemplate>
-                                 </ItemsControl.ItemTemplate>
-                             </ItemsControl>
-                         </StackPanel>
-                     </Border>
-                 
-                     <Border Classes="Card" Grid.Column="1" Margin="8,0,0,0" Padding="18" CornerRadius="12">
-                         <StackPanel Spacing="12">
-                             <StackPanel Orientation="Horizontal" Spacing="8">
-                                 <mi:MaterialIcon Kind="CalendarMonthOutline" Width="18" Height="18" Foreground="#60A5FA" />
-                                 <TextBlock Text="Today's Schedule" FontWeight="SemiBold" FontSize="15" />
-                             </StackPanel>
-                 
-                             <TextBlock Text="No events scheduled today" FontSize="13" Foreground="{DynamicResource LifeOS.Brush.TextSecondary}"
-                                        IsVisible="{Binding !TodaySchedule.Count}" Margin="0,8" />
-                 
-                             <ItemsControl ItemsSource="{Binding TodaySchedule}">
-                                 <ItemsControl.ItemTemplate>
-                                     <DataTemplate x:DataType="cal:CalendarEvent">
-                                         <DockPanel Margin="0,4">
-                                             <TextBlock DockPanel.Dock="Right" Text="{Binding StartTime, StringFormat='{}{0:hh\\:mm tt}'}"
-                                                        Foreground="{DynamicResource LifeOS.Brush.TextSecondary}" FontSize="12" />
-                                             <TextBlock Text="{Binding Title}" />
-                                         </DockPanel>
-                                     </DataTemplate>
-                                 </ItemsControl.ItemTemplate>
-                             </ItemsControl>
-                         </StackPanel>
-                     </Border>
-                 </Grid>
+            <!-- Tasks + Schedule -->
+            <Grid ColumnDefinitions="*,*">
+                <Border Classes="Card" Grid.Column="0" Margin="0,0,8,0" Padding="18" CornerRadius="12">
+                    <StackPanel Spacing="12">
+                        <StackPanel Orientation="Horizontal" Spacing="8">
+                            <mi:MaterialIcon Kind="CheckboxMarkedCircleOutline" Width="18" Height="18" Foreground="#4ADE80" />
+                            <TextBlock Text="Today's Tasks" FontWeight="SemiBold" FontSize="15" />
+                        </StackPanel>
 
-                            <!-- Habits + Quick Note -->
-                <Grid ColumnDefinitions="*,*">
-                    <Border Classes="Card" Grid.Column="0" Margin="0,0,8,0" Padding="18" CornerRadius="12">
-                        <StackPanel Spacing="12">
-                            <StackPanel Orientation="Horizontal" Spacing="8">
-                                <mi:MaterialIcon Kind="Repeat" Width="18" Height="18" Foreground="#FB923C" />
-                                <TextBlock Text="Habits" FontWeight="SemiBold" FontSize="15" />
-                            </StackPanel>
-                
-                            <TextBlock Text="No habits tracked yet" FontSize="13" Foreground="{DynamicResource LifeOS.Brush.TextSecondary}"
-                                       IsVisible="{Binding !TodayHabits.Count}" Margin="0,8" />
-                
-                            <ItemsControl ItemsSource="{Binding TodayHabits}">
-                                <ItemsControl.ItemTemplate>
-                                    <DataTemplate x:DataType="habits:HabitProgress">
-                                        <DockPanel Margin="0,4">
-                                            <TextBlock DockPanel.Dock="Right" Text="{Binding CurrentStreak, StringFormat='{}{0}d'}"
-                                                       Foreground="{DynamicResource LifeOS.Brush.TextSecondary}" FontSize="12" />
-                                            <TextBlock Text="{Binding Habit.Name}" />
+                        <TextBlock Text="No tasks for today" FontSize="13" Foreground="{DynamicResource LifeOS.Brush.TextSecondary}"
+                                   IsVisible="{Binding !TodayTasks.Count}" Margin="0,8" />
+
+                        <ItemsControl ItemsSource="{Binding TodayTasks}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate x:DataType="tasks:TaskItem">
+                                    <DockPanel Margin="0,4">
+                                        <Border DockPanel.Dock="Left" Width="4" CornerRadius="2" Margin="0,0,8,0" Height="18"
+                                                Background="{Binding Priority, Converter={x:Static conv:PriorityColorConverter.Instance}}" />
+                                        <CheckBox
+                                               DockPanel.Dock="Left"
+                                               IsChecked="{Binding IsCompleted}"
+                                               IsHitTestVisible="False" />
+                                        <TextBlock Text="{Binding Title}" VerticalAlignment="Center" Margin="8,0,0,0" />
+                                    </DockPanel>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                         <Button
+                            Content="View All Tasks →"
+                            HorizontalAlignment="Right"
+                            Margin="0,8,0,0"
+                            Command="{Binding ViewAllTasksCommand}" />
+                    </StackPanel>
+                </Border>
+
+                <Border Classes="Card" Grid.Column="1" Margin="8,0,0,0" Padding="18" CornerRadius="12">
+                    <StackPanel Spacing="12">
+                        <StackPanel Orientation="Horizontal" Spacing="8">
+                            <mi:MaterialIcon Kind="CalendarMonthOutline" Width="18" Height="18" Foreground="#60A5FA" />
+                            <TextBlock Text="Today's Schedule" FontWeight="SemiBold" FontSize="15" />
+                        </StackPanel>
+
+                        <TextBlock Text="No events scheduled today" FontSize="13" Foreground="{DynamicResource LifeOS.Brush.TextSecondary}"
+                                   IsVisible="{Binding !TodaySchedule.Count}" Margin="0,8" />
+
+                        <ItemsControl ItemsSource="{Binding TodaySchedule}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate x:DataType="cal:CalendarEvent">
+                                    <DockPanel Margin="0,4">
+                                        <TextBlock DockPanel.Dock="Right" Text="{Binding StartTime, StringFormat='{}{0:hh\\:mm tt}'}"
+                                                   Foreground="{DynamicResource LifeOS.Brush.TextSecondary}" FontSize="12" />
+                                        <TextBlock Text="{Binding Title}" />
+                                    </DockPanel>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </StackPanel>
+                </Border>
+            </Grid>
+
+            <!-- Habits + Quick Note -->
+            <Grid ColumnDefinitions="*,*">
+                <Border Classes="Card" Grid.Column="0" Margin="0,0,8,0" Padding="18" CornerRadius="12">
+                    <StackPanel Spacing="12">
+                        <StackPanel Orientation="Horizontal" Spacing="8">
+                            <mi:MaterialIcon Kind="Repeat" Width="18" Height="18" Foreground="#FB923C" />
+                            <TextBlock Text="Habits" FontWeight="SemiBold" FontSize="15" />
+                        </StackPanel>
+
+                        <TextBlock Text="No habits tracked yet" FontSize="13" Foreground="{DynamicResource LifeOS.Brush.TextSecondary}"
+                                   IsVisible="{Binding !TodayHabits.Count}" Margin="0,8" />
+
+                        <ItemsControl ItemsSource="{Binding TodayHabits}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate x:DataType="habits:HabitProgress">
+                                    <DockPanel Margin="0,4">
+                                        <TextBlock DockPanel.Dock="Right" Text="{Binding CurrentStreak, StringFormat='{}{0}d'}"
+                                                   Foreground="{DynamicResource LifeOS.Brush.TextSecondary}" FontSize="12" />
+                                        <TextBlock Text="{Binding Habit.Name}" />
+                                    </DockPanel>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </StackPanel>
+                </Border>
+
+                <Border Classes="Card" Grid.Column="1" Margin="8,0,0,0" Padding="18" CornerRadius="12">
+                    <StackPanel Spacing="12">
+                        <StackPanel Orientation="Horizontal" Spacing="8">
+                            <mi:MaterialIcon Kind="NoteTextOutline" Width="18" Height="18" Foreground="#A78BFA" />
+                            <TextBlock Text="Quick Note" FontWeight="SemiBold" FontSize="15" />
+                        </StackPanel>
+
+                        <TextBlock Text="No notes yet" FontSize="13" Foreground="{DynamicResource LifeOS.Brush.TextSecondary}"
+                                   IsVisible="{Binding LatestNote, Converter={x:Static ObjectConverters.IsNull}}" />
+
+                        <StackPanel IsVisible="{Binding LatestNote, Converter={x:Static ObjectConverters.IsNotNull}}">
+                            <TextBlock Text="{Binding LatestNote.Title}" FontWeight="SemiBold" FontSize="13" />
+                            <TextBlock Text="{Binding LatestNote.ContentMarkdown}" TextWrapping="Wrap" MaxLines="3"
+                                       FontSize="12" Foreground="{DynamicResource LifeOS.Brush.TextSecondary}" Margin="0,4,0,0" />
+                        </StackPanel>
+                    </StackPanel>
+                </Border>
+            </Grid>
+
+            <!-- Goals + Recent Activity -->
+            <Grid ColumnDefinitions="*,*">
+                <Border Classes="Card" Grid.Column="0" Margin="0,0,8,0" Padding="18" CornerRadius="12">
+                    <StackPanel Spacing="12">
+                        <StackPanel Orientation="Horizontal" Spacing="8">
+                            <mi:MaterialIcon Kind="FlagCheckered" Width="18" Height="18" Foreground="#C084FC" />
+                            <TextBlock Text="Goals Progress" FontWeight="SemiBold" FontSize="15" />
+                        </StackPanel>
+
+                        <TextBlock Text="No active goals" FontSize="13" Foreground="{DynamicResource LifeOS.Brush.TextSecondary}"
+                                   IsVisible="{Binding !TopGoals.Count}" Margin="0,8" />
+
+                        <ItemsControl ItemsSource="{Binding TopGoals}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate x:DataType="goals:GoalProgress">
+                                    <StackPanel Margin="0,4" Spacing="4">
+                                        <DockPanel>
+                                            <TextBlock DockPanel.Dock="Right" Text="{Binding ProgressPercent, StringFormat='{}{0}%'}" />
+                                            <TextBlock Text="{Binding Goal.Title}" />
                                         </DockPanel>
-                                    </DataTemplate>
-                                </ItemsControl.ItemTemplate>
-                            </ItemsControl>
-                        </StackPanel>
-                    </Border>
-                
-                    <Border Classes="Card" Grid.Column="1" Margin="8,0,0,0" Padding="18" CornerRadius="12">
-                        <StackPanel Spacing="12">
-                            <StackPanel Orientation="Horizontal" Spacing="8">
-                                <mi:MaterialIcon Kind="NoteTextOutline" Width="18" Height="18" Foreground="#A78BFA" />
-                                <TextBlock Text="Quick Note" FontWeight="SemiBold" FontSize="15" />
-                            </StackPanel>
-                
-                            <TextBlock Text="No notes yet" FontSize="13" Foreground="{DynamicResource LifeOS.Brush.TextSecondary}"
-                                       IsVisible="{Binding LatestNote, Converter={x:Static ObjectConverters.IsNull}}" />
-                
-                            <StackPanel IsVisible="{Binding LatestNote, Converter={x:Static ObjectConverters.IsNotNull}}">
-                                <TextBlock Text="{Binding LatestNote.Title}" FontWeight="SemiBold" FontSize="13" />
-                                <TextBlock Text="{Binding LatestNote.ContentMarkdown}" TextWrapping="Wrap" MaxLines="3"
-                                           FontSize="12" Foreground="{DynamicResource LifeOS.Brush.TextSecondary}" Margin="0,4,0,0" />
-                            </StackPanel>
-                        </StackPanel>
-                    </Border>
-                </Grid>
+                                        <ProgressBar Minimum="0" Maximum="100" Value="{Binding ProgressPercent}" Height="4" />
+                                    </StackPanel>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </StackPanel>
+                </Border>
 
-                        <!-- Goals + Recent Activity -->
-             <Grid ColumnDefinitions="*,*">
-                 <Border Classes="Card" Grid.Column="0" Margin="0,0,8,0" Padding="18" CornerRadius="12">
-                     <StackPanel Spacing="12">
-                         <StackPanel Orientation="Horizontal" Spacing="8">
-                             <mi:MaterialIcon Kind="FlagCheckered" Width="18" Height="18" Foreground="#C084FC" />
-                             <TextBlock Text="Goals Progress" FontWeight="SemiBold" FontSize="15" />
-                         </StackPanel>
-             
-                         <TextBlock Text="No active goals" FontSize="13" Foreground="{DynamicResource LifeOS.Brush.TextSecondary}"
-                                    IsVisible="{Binding !TopGoals.Count}" Margin="0,8" />
-             
-                         <ItemsControl ItemsSource="{Binding TopGoals}">
-                             <ItemsControl.ItemTemplate>
-                                 <DataTemplate x:DataType="goals:GoalProgress">
-                                     <StackPanel Margin="0,4" Spacing="4">
-                                         <DockPanel>
-                                             <TextBlock DockPanel.Dock="Right" Text="{Binding ProgressPercent, StringFormat='{}{0}%'}" />
-                                             <TextBlock Text="{Binding Goal.Title}" />
-                                         </DockPanel>
-                                         <ProgressBar Minimum="0" Maximum="100" Value="{Binding ProgressPercent}" Height="4" />
-                                     </StackPanel>
-                                 </DataTemplate>
-                             </ItemsControl.ItemTemplate>
-                         </ItemsControl>
-                     </StackPanel>
-                 </Border>
-             
-                 <Border Classes="Card" Grid.Column="1" Margin="8,0,0,0" Padding="18" CornerRadius="12">
-                     <StackPanel Spacing="12">
-                         <StackPanel Orientation="Horizontal" Spacing="8">
-                             <mi:MaterialIcon Kind="ClockOutline" Width="18" Height="18" Foreground="#F472B6" />
-                             <TextBlock Text="Recent Activity" FontWeight="SemiBold" FontSize="15" />
-                         </StackPanel>
-             
-                         <TextBlock Text="No activity yet today" FontSize="13" Foreground="{DynamicResource LifeOS.Brush.TextSecondary}"
-                                    IsVisible="{Binding !RecentActivity.Count}" Margin="0,8" />
-             
-                         <ItemsControl ItemsSource="{Binding RecentActivity}">
-                             <ItemsControl.ItemTemplate>
-                                 <DataTemplate x:DataType="activity:ActivityLogEntry">
-                                     <DockPanel Margin="0,4">
-                                         <TextBlock DockPanel.Dock="Right" Text="{Binding Timestamp, StringFormat='{}{0:hh\\:mm tt}'}"
-                                                    FontSize="11" Foreground="{DynamicResource LifeOS.Brush.TextSecondary}" />
-                                         <TextBlock Text="{Binding Icon}" Margin="0,0,6,0" />
-                                         <TextBlock Text="{Binding Title}" FontSize="12" />
-                                     </DockPanel>
-                                 </DataTemplate>
-                             </ItemsControl.ItemTemplate>
-                         </ItemsControl>
-                     </StackPanel>
-                 </Border>
-             </Grid>
+                <Border Classes="Card" Grid.Column="1" Margin="8,0,0,0" Padding="18" CornerRadius="12">
+                    <StackPanel Spacing="12">
+                        <StackPanel Orientation="Horizontal" Spacing="8">
+                            <mi:MaterialIcon Kind="ClockOutline" Width="18" Height="18" Foreground="#F472B6" />
+                            <TextBlock Text="Recent Activity" FontWeight="SemiBold" FontSize="15" />
+                        </StackPanel>
+
+                        <TextBlock Text="No activity yet today" FontSize="13" Foreground="{DynamicResource LifeOS.Brush.TextSecondary}"
+                                   IsVisible="{Binding !RecentActivity.Count}" Margin="0,8" />
+
+                        <ItemsControl ItemsSource="{Binding RecentActivity}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate x:DataType="activity:ActivityLogEntry">
+                                    <DockPanel Margin="0,4">
+                                        <TextBlock DockPanel.Dock="Right" Text="{Binding Timestamp, StringFormat='{}{0:hh\\:mm tt}'}"
+                                                   FontSize="11" Foreground="{DynamicResource LifeOS.Brush.TextSecondary}" />
+                                        <TextBlock Text="{Binding Icon}" Margin="0,0,6,0" />
+                                        <TextBlock Text="{Binding Title}" FontSize="12" />
+                                    </DockPanel>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </StackPanel>
+                </Border>
+            </Grid>
 
         </StackPanel>
     </ScrollViewer>

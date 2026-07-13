@@ -3,6 +3,7 @@ using System;
 using LifeOS.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -10,9 +11,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace LifeOS.Persistence.Migrations
 {
     [DbContext(typeof(LifeOSDbContext))]
-    partial class LifeOSDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260713171455_AddNoteFolders")]
+    partial class AddNoteFolders
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "10.0.0");
@@ -197,7 +200,7 @@ namespace LifeOS.Persistence.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("TEXT");
 
-                    b.Property<Guid?>("SubjectId")
+                    b.Property<Guid>("FolderId")
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Title")
@@ -210,7 +213,25 @@ namespace LifeOS.Persistence.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Notes", (string)null);
+                    b.HasIndex("FolderId");
+
+                    b.ToTable("Notes");
+                });
+
+            modelBuilder.Entity("LifeOS.Domain.Notes.NoteFolder", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("NoteFolders");
                 });
 
             modelBuilder.Entity("LifeOS.Domain.Statistics.DailyStatistics", b =>
@@ -338,9 +359,25 @@ namespace LifeOS.Persistence.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("LifeOS.Domain.Notes.Note", b =>
+                {
+                    b.HasOne("LifeOS.Domain.Notes.NoteFolder", "Folder")
+                        .WithMany("Notes")
+                        .HasForeignKey("FolderId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Folder");
+                });
+
             modelBuilder.Entity("LifeOS.Domain.Goals.Goal", b =>
                 {
                     b.Navigation("Milestones");
+                });
+
+            modelBuilder.Entity("LifeOS.Domain.Notes.NoteFolder", b =>
+                {
+                    b.Navigation("Notes");
                 });
 #pragma warning restore 612, 618
         }

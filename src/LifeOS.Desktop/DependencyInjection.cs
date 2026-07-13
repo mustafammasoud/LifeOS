@@ -1,3 +1,4 @@
+using LifeOS.Application.Notes;
 using LifeOS.Desktop.Services;
 using LifeOS.Desktop.ViewModels;
 using LifeOS.Desktop.ViewModels.Pages;
@@ -12,7 +13,7 @@ public static class DependencyInjection
         services.AddSingleton<MainWindowViewModel>();
         services.AddTransient<DashboardViewModel>();
         services.AddTransient<HabitsViewModel>();
-        services.AddSingleton<StudyViewModel>();
+        services.AddTransient<StudyViewModel>();
         services.AddTransient<GoalsViewModel>();
         services.AddTransient<NotesViewModel>();
         services.AddTransient<CalendarViewModel>();
@@ -20,6 +21,9 @@ public static class DependencyInjection
         services.AddSingleton<IDialogService, DialogService>();
         services.AddTransient<StatisticsViewModel>();
         services.AddTransient<SettingsViewModel>();
+        services.AddSingleton<INavigationService, NavigationService>();
+        services.AddScoped<INoteService, NoteService>();
+        
         
 
         return services;

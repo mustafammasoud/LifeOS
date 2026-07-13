@@ -1,7 +1,9 @@
 using System;
 using System.Collections.ObjectModel;
+using System.Linq;
 using CommunityToolkit.Mvvm.ComponentModel;
 using LifeOS.Desktop.Navigation;
+using LifeOS.Desktop.Services;
 using LifeOS.Desktop.ViewModels.Pages;
 using Material.Icons;
 using Microsoft.Extensions.DependencyInjection;
@@ -12,6 +14,8 @@ public sealed partial class MainWindowViewModel : ObservableObject
 {
     private readonly IServiceProvider _services;
 
+    private readonly INavigationService _navigation;
+
     public ObservableCollection<NavigationItemViewModel> NavigationItems { get; }
 
     [ObservableProperty]
@@ -20,9 +24,12 @@ public sealed partial class MainWindowViewModel : ObservableObject
     [ObservableProperty]
     private ObservableObject _currentPage;
 
-    public MainWindowViewModel(IServiceProvider services)
-    {
-        _services = services;
+    public MainWindowViewModel(
+    IServiceProvider services,
+    INavigationService navigation)
+{
+    _services = services;
+    _navigation = navigation;
 
         NavigationItems = new ObservableCollection<NavigationItemViewModel>
         {
@@ -39,6 +46,12 @@ public sealed partial class MainWindowViewModel : ObservableObject
 
         _selectedNavigationItem = NavigationItems[0];
         _currentPage = ResolvePage(PageKey.Dashboard);
+        _navigation.NavigateRequested += page =>
+      {
+          var item = NavigationItems.First(x => x.Key == page);
+      
+          SelectedNavigationItem = item;
+      };
     }
 
     partial void OnSelectedNavigationItemChanged(NavigationItemViewModel value)

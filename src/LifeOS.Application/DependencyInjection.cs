@@ -4,6 +4,7 @@ using LifeOS.Application.Calendar;
 using LifeOS.Application.Goals;
 using LifeOS.Application.Habits;
 using LifeOS.Application.Notes;
+using LifeOS.Application.Statistics;
 using LifeOS.Application.Study;
 using LifeOS.Application.Tasks;
 using Microsoft.Extensions.DependencyInjection;
@@ -24,6 +25,7 @@ public static class DependencyInjection
         services.AddScoped<INoteService, NoteService>();
         services.AddScoped<ICalendarService, CalendarService>();
         services.AddScoped<IActivityLogService, ActivityLogService>();
+        services.AddScoped<IDailyStatisticsService, DailyStatisticsService>();
 
         return services;
     }

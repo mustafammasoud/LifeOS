@@ -19,14 +19,19 @@
             </StackPanel>
             <!-- Progress rings -->
             <UniformGrid Columns="3">
-                <ctrl:RingProgress Percentage="{Binding WeeklyTaskCompletionPercent}"
-                                    RingColor="#4ADE80" Label="Weekly Tasks" />
+               <ctrl:RingProgress Percentage="{Binding WeeklyTaskCompletionPercent}"
+                                  RingColor="#4ADE80" Label="Weekly Tasks" 
+                                                            x:Name="WeeklyRing" />
                 <ctrl:RingProgress Percentage="{Binding HabitsCompletionPercent}"
                                     RingColor="#FB923C" Label="Habits Today" />
                 <ctrl:RingProgress Percentage="{Binding GoalsCompletionPercent}"
                                     RingColor="#C084FC" Label="Goals Completed" />
             </UniformGrid>
-
+                         <Button Content="🔄 Refresh Statistics" 
+                            HorizontalAlignment="Right" 
+                            Margin="0,0,0,16"
+                            Click="OnRefreshClicked" />
+                            
             <!-- Summary cards -->
             <UniformGrid Columns="4" Rows="1">
                 <Border Classes="Card" Margin="0,0,10,0" Padding="18" CornerRadius="12">
@@ -66,27 +71,54 @@
             <Border Classes="Card" Padding="20" CornerRadius="12">
                 <StackPanel Spacing="16">
                     <StackPanel Orientation="Horizontal" Spacing="8">
-                        <mi:MaterialIcon Kind="ChartBar" Width="18" Height="18" Foreground="#4ADE80" />
-                        <TextBlock Text="Tasks Completed — Last 7 Days" FontWeight="SemiBold" FontSize="15" />
-                    </StackPanel>
-                    <ItemsControl ItemsSource="{Binding WeeklyTasks}">
-                        <ItemsControl.ItemTemplate>
-                            <DataTemplate>
-                                <Grid ColumnDefinitions="40,*,30" Margin="0,6">
-                                    <TextBlock Grid.Column="0" Text="{Binding DayLabel}" FontSize="13"
-                                               Foreground="{DynamicResource LifeOS.Brush.TextSecondary}" VerticalAlignment="Center" />
-                                    <ProgressBar Grid.Column="1" Minimum="0" Maximum="100" Value="{Binding PercentOfMax}"
-                                                 Height="10" CornerRadius="5" Margin="10,0" Foreground="#4ADE80" />
-                                    <TextBlock Grid.Column="2" Text="{Binding Count}" FontSize="13" FontWeight="SemiBold"
-                                               HorizontalAlignment="Right" VerticalAlignment="Center" />
-                                </Grid>
-                            </DataTemplate>
-                        </ItemsControl.ItemTemplate>
-                    </ItemsControl>
-                </StackPanel>
-            </Border>
-
-            <!-- Study breakdown -->
+                         <mi:MaterialIcon Kind="ChartBar" Width="18" Height="18" Foreground="#4ADE80" />
+                         <TextBlock Text="Tasks Completed — Last 7 Days" FontWeight="SemiBold" FontSize="15" />
+                     </StackPanel>
+                     <ItemsControl ItemsSource="{Binding WeeklyTasks}">
+                   <ItemsControl.ItemsPanel>
+                       <ItemsPanelTemplate>
+                           <UniformGrid Columns="7"/>
+                       </ItemsPanelTemplate>
+                   </ItemsControl.ItemsPanel>
+               
+                   <ItemsControl.ItemTemplate>
+                       <DataTemplate>
+               
+                           <StackPanel
+                               VerticalAlignment="Bottom"
+                               HorizontalAlignment="Center"
+                               Spacing="6">
+               
+                               <!-- Number -->
+                               <TextBlock
+                                   Text="{Binding Count}"
+                                   HorizontalAlignment="Center"
+                                   FontWeight="SemiBold"
+                                   FontSize="12"/>
+               
+                               <!-- Bar -->
+                               <Border
+                                   Width="34"
+                                   Height="{Binding Height}"
+                                   Background="{Binding Color}"
+                                   CornerRadius="6,6,0,0"/>
+               
+                               <!-- Day -->
+                               <TextBlock
+                                   Text="{Binding DayLabel}"
+                                   HorizontalAlignment="Center"
+                                   FontSize="12"
+                                   Foreground="{DynamicResource LifeOS.Brush.TextSecondary}"/>
+               
+                           </StackPanel>
+               
+                       </DataTemplate>
+                   </ItemsControl.ItemTemplate>
+               </ItemsControl>
+                              </StackPanel>
+                          </Border>
+              
+                          <!-- Study breakdown -->
             <Border Classes="Card" Padding="20" CornerRadius="12">
                 <StackPanel Spacing="16">
                     <StackPanel Orientation="Horizontal" Spacing="8">

@@ -7,6 +7,6 @@ public interface ITaskService
     Task<List<TaskItem>> GetTodayTasksAsync();
     Task<List<TaskItem>> GetAllTasksAsync();
     Task<TaskItem> AddTaskAsync(string title, TaskPriority priority = TaskPriority.Medium, DateTime? dueDate = null);
-    Task CompleteTaskAsync(Guid id);
+    Task SetCompletedAsync(Guid id, bool isCompleted);
     Task DeleteTaskAsync(Guid id);
 }

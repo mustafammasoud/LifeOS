@@ -3,125 +3,185 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
 using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 using LifeOS.Application.Goals;
 using LifeOS.Application.Habits;
+using LifeOS.Application.Statistics;
 using LifeOS.Application.Study;
 using LifeOS.Application.Tasks;
 
 namespace LifeOS.Desktop.ViewModels.Pages;
 
-public class SubjectStat
-{
-    public required string Name { get; init; }
-    public int Minutes { get; init; }
-    public int PercentOfMax { get; init; }
-}
-
+public class SubjectStat { public required string Name { get; init; } public int Minutes { get; init; } public int PercentOfMax { get; init; } }
 public class DayStat
 {
     public required string DayLabel { get; init; }
+
     public int Count { get; init; }
-    public int PercentOfMax { get; init; }
+
+    public int Height { get; init; }
+
+    public string Color { get; init; } = "#4ADE80";
 }
 
-public class HabitStat
-{
-    public required string Name { get; init; }
-    public int Streak { get; init; }
-}
+public class HabitStat { public required string Name { get; init; } public int Streak { get; init; } }
 
 public sealed partial class StatisticsViewModel : ObservableObject
 {
-    private readonly ITaskService _taskService;
+    private readonly IDailyStatisticsService _statisticsService;
     private readonly IHabitService _habitService;
     private readonly IStudyService _studyService;
     private readonly IGoalService _goalService;
-    [ObservableProperty] private double _habitsCompletionPercent;
-    [ObservableProperty] private double _goalsCompletionPercent;
-    [ObservableProperty] private double _weeklyTaskCompletionPercent;
-    
-    [ObservableProperty] private int _totalTasksCompleted;
-    [ObservableProperty] private int _totalStudyMinutes;
-    [ObservableProperty] private int _longestStreak;
-    [ObservableProperty] private int _goalsCompleted;
-    [ObservableProperty] private int _goalsActive;
+
+    public double WeeklyTaskCompletionPercent { get; private set; }
+    public double HabitsCompletionPercent { get; private set; }
+    public double GoalsCompletionPercent { get; private set; }
+    public double StudyFocusPercent { get; private set; }
+
+    public int TotalTasksCompleted { get; private set; }
+    public int TotalStudyMinutes { get; private set; }
+    public int LongestStreak { get; private set; }
+    public int GoalsCompleted { get; private set; }
+    public int GoalsActive { get; private set; }
 
     public ObservableCollection<DayStat> WeeklyTasks { get; } = new();
     public ObservableCollection<SubjectStat> SubjectBreakdown { get; } = new();
     public ObservableCollection<HabitStat> HabitStreaks { get; } = new();
 
     public StatisticsViewModel(
-        ITaskService taskService, IHabitService habitService,
-        IStudyService studyService, IGoalService goalService)
+    IDailyStatisticsService statisticsService,
+    IHabitService habitService,
+    IStudyService studyService,
+    IGoalService goalService)
     {
-        _taskService = taskService;
+    _statisticsService = statisticsService;
         _habitService = habitService;
         _studyService = studyService;
         _goalService = goalService;
-
         _ = LoadAsync();
     }
 
-    private async Task LoadAsync()
+    [RelayCommand]
+    public async Task Reload()
     {
-        // Tasks
-        var tasks = await _taskService.GetAllTasksAsync();
-        var completed = tasks.Where(t => t.IsCompleted && t.CompletedAt != null).ToList();
-        TotalTasksCompleted = completed.Count;
-
-        var today = DateTime.Today;
-        var last7Days = Enumerable.Range(0, 7).Select(i => today.AddDays(-6 + i)).ToList();
-        var dayCounts = last7Days
-            .Select(d => completed.Count(t => t.CompletedAt!.Value.Date == d))
-            .ToList();
-        var maxDay = Math.Max(1, dayCounts.Max());
-
-        WeeklyTasks.Clear();
-        for (var i = 0; i < last7Days.Count; i++)
-        {
-            WeeklyTasks.Add(new DayStat
-            {
-                DayLabel = last7Days[i].ToString("ddd"),
-                Count = dayCounts[i],
-                PercentOfMax = (int)(dayCounts[i] * 100.0 / maxDay)
-            });
-        }
-
-        // Study
-        var summaries = await _studyService.GetSubjectSummariesAsync();
-        TotalStudyMinutes = summaries.Sum(s => s.TotalMinutes);
-        var maxMinutes = Math.Max(1, summaries.Select(s => s.TotalMinutes).DefaultIfEmpty(0).Max());
-
-        SubjectBreakdown.Clear();
-        foreach (var s in summaries.OrderByDescending(s => s.TotalMinutes))
-        {
-            SubjectBreakdown.Add(new SubjectStat
-            {
-                Name = s.SubjectName,
-                Minutes = s.TotalMinutes,
-                PercentOfMax = (int)(s.TotalMinutes * 100.0 / maxMinutes)
-            });
-        }
-
-        // Habits
-        var habits = await _habitService.GetTodayHabitsAsync();
-        LongestStreak = habits.Count == 0 ? 0 : habits.Max(h => h.CurrentStreak);
-
-        HabitStreaks.Clear();
-        foreach (var h in habits.OrderByDescending(h => h.CurrentStreak))
-            HabitStreaks.Add(new HabitStat { Name = h.Habit.Name, Streak = h.CurrentStreak });
-
-        // Goals
-        var (goalsCompleted, goalsActive) = await _goalService.GetGoalsSummaryAsync();
-        GoalsCompleted = goalsCompleted;
-        GoalsActive = goalsActive;
-
-        HabitsCompletionPercent = habits.Count == 0 ? 0 : habits.Count(h => h.IsCompletedToday) * 100.0 / habits.Count;
-
-        var goalsTotal = goalsCompleted + goalsActive;
-        GoalsCompletionPercent = goalsTotal == 0 ? 0 : goalsCompleted * 100.0 / goalsTotal;
-        
-        var weekTotalCreated = tasks.Count(t => t.CreatedAt >= today.AddDays(-6));
-        WeeklyTaskCompletionPercent = weekTotalCreated == 0 ? 0 : Math.Min(100, dayCounts.Sum() * 100.0 / weekTotalCreated);
+        await LoadAsync();
     }
+
+    public async Task LoadAsync()
+{
+    // ==========================
+    // Tasks Statistics
+    // ==========================
+
+    var today = DateOnly.FromDateTime(DateTime.Today);
+
+    // هنخليها السبت مؤقتًا
+    var startOfWeek = today.AddDays(-(int)today.DayOfWeek);
+
+    var week = await _statisticsService.GetWeekAsync(startOfWeek);
+
+    var created = week.Sum(x => x.TasksCreated);
+    var completed = week.Sum(x => x.TasksCompleted);
+
+    TotalTasksCompleted = completed;
+
+    WeeklyTaskCompletionPercent =
+        created == 0
+            ? 0
+            : completed * 100.0 / created;
+
+    WeeklyTasks.Clear();
+
+    var maxCompleted = Math.Max(1, week.Max(x => x.TasksCompleted));
+
+    foreach (var day in week.OrderBy(x => x.Date))
+    {  var height = Math.Max(
+          12,
+          (int)(day.TasksCompleted * 120.0 / maxCompleted));
+      
+      WeeklyTasks.Add(new DayStat
+      {
+          DayLabel = day.Date.ToString("ddd"),
+          Count = day.TasksCompleted,
+          Height = height,
+          Color = GetBarColor(day.TasksCompleted)
+      });}
+
+    // ==========================
+    // Study
+    // ==========================
+
+    var summaries = await _studyService.GetSubjectSummariesAsync();
+
+    TotalStudyMinutes = summaries.Sum(s => s.TotalMinutes);
+
+    var maxMinutes = Math.Max(
+        1,
+        summaries.Select(s => s.TotalMinutes)
+                 .DefaultIfEmpty(0)
+                 .Max());
+
+    SubjectBreakdown.Clear();
+
+    foreach (var s in summaries.OrderByDescending(s => s.TotalMinutes))
+    {
+        SubjectBreakdown.Add(new SubjectStat
+        {
+            Name = s.SubjectName,
+            Minutes = s.TotalMinutes,
+            PercentOfMax = (int)(s.TotalMinutes * 100.0 / maxMinutes)
+        });
+    }
+
+    var todayFocus = await _studyService.GetTodayFocusMinutesAsync();
+
+    StudyFocusPercent = Math.Min(100, todayFocus / 240.0 * 100);
+
+    // ==========================
+    // Habits
+    // ==========================
+
+    var habits = await _habitService.GetTodayHabitsAsync();
+
+    LongestStreak = habits.Count == 0
+        ? 0
+        : habits.Max(h => h.CurrentStreak);
+
+    HabitsCompletionPercent = habits.Count == 0
+        ? 0
+        : habits.Count(h => h.IsCompletedToday) * 100.0 / habits.Count;
+
+    // ==========================
+    // Goals
+    // ==========================
+
+    var (completedGoals, activeGoals) =
+        await _goalService.GetGoalsSummaryAsync();
+
+    GoalsCompleted = completedGoals;
+    GoalsActive = activeGoals;
+
+    GoalsCompletionPercent =
+        (completedGoals + activeGoals) == 0
+            ? 0
+            : completedGoals * 100.0 / (completedGoals + activeGoals);
+
+    OnPropertyChanged(nameof(WeeklyTaskCompletionPercent));
+    OnPropertyChanged(nameof(HabitsCompletionPercent));
+    OnPropertyChanged(nameof(GoalsCompletionPercent));
+    OnPropertyChanged(nameof(StudyFocusPercent));
+}
+
+private static string GetBarColor(int count)
+{
+    return count switch
+    {
+        0 => "#404040",
+        <= 2 => "#4ADE80",
+        <= 5 => "#60A5FA",
+        <= 8 => "#A855F7",
+        _ => "#EF4444"
+    };
+}
+
 }
