@@ -51,4 +51,11 @@ public class TaskRepository : ITaskRepository
         _context.Tasks.Remove(task);
         await _context.SaveChangesAsync();
     }
+    public Task<List<TaskItem>> GetByStatisticsDateAsync(DateOnly date)
+    {
+        return _context.Tasks
+            .Where(t => t.StatisticsDate == date)
+            .ToListAsync();
+    }
+    
 }
