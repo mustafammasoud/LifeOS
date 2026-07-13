@@ -51,9 +51,16 @@ private async Task DeleteHabitAsync(HabitProgress progress)
 }
 
     [RelayCommand]
-    private async Task LogProgressAsync(HabitProgress progress)
-    {
-        await _habitService.LogProgressAsync(progress.Habit.Id);
-        await LoadAsync();
-    }
+  private async Task IncrementProgressAsync(HabitProgress progress)
+  {
+      await _habitService.LogProgressAsync(progress.Habit.Id, 1);
+      await LoadAsync();
+  }
+  
+  [RelayCommand]
+  private async Task DecrementProgressAsync(HabitProgress progress)
+  {
+      await _habitService.LogProgressAsync(progress.Habit.Id, -1);
+      await LoadAsync();
+  }
 }

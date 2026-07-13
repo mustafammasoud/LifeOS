@@ -23,14 +23,22 @@
                 <DataTemplate x:DataType="habits:HabitProgress">
                     <Border Classes="Card" Margin="0,4">
                         <DockPanel>
-                            <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" Spacing="8">
-                                <Button Content="{Binding TodayCount}"
-                                        Command="{Binding $parent[ItemsControl].((vm:HabitsViewModel)DataContext).LogProgressCommand}"
-                                        CommandParameter="{Binding}" />
-                                <Button Content="✕"
-                                        Command="{Binding $parent[ItemsControl].((vm:HabitsViewModel)DataContext).DeleteHabitCommand}"
-                                        CommandParameter="{Binding}" />
-                            </StackPanel>
+                           <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
+                           
+                               
+                               <Button Content="▼" Width="30" Padding="0"
+                                       Command="{Binding $parent[ItemsControl].((vm:HabitsViewModel)DataContext).DecrementProgressCommand}"
+                                       CommandParameter="{Binding}" />
+                               <TextBlock Text="{Binding TodayCount}" FontWeight="SemiBold" FontSize="15"
+                                          VerticalAlignment="Center" MinWidth="20" HorizontalAlignment="Center" />
+                               <Button Content="▲" Width="30" Padding="0"
+                                       Command="{Binding $parent[ItemsControl].((vm:HabitsViewModel)DataContext).IncrementProgressCommand}"
+                                       CommandParameter="{Binding}" />
+                           
+                               <Button Content="✕"
+                                       Command="{Binding $parent[ItemsControl].((vm:HabitsViewModel)DataContext).DeleteHabitCommand}"
+                                       CommandParameter="{Binding}" />
+                           </StackPanel>
                             <StackPanel>
                                 <TextBlock Text="{Binding Habit.Name}" FontWeight="SemiBold" />
                                 <TextBlock Text="{Binding CurrentStreak, StringFormat='{}{0} day streak'}"

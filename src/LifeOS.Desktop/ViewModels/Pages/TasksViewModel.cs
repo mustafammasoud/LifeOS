@@ -8,12 +8,16 @@ using LifeOS.Desktop.Services;
 using LifeOS.Domain.Tasks;
 using System.Linq;
 using Microsoft.Extensions.DependencyInjection;
+using Avalonia.Threading;
 
 namespace LifeOS.Desktop.ViewModels.Pages;
 
 public sealed partial class TasksViewModel : ObservableObject
 {
     private readonly ITaskService _taskService;
+
+    private DateOnly _loadedDate = DateOnly.FromDateTime(DateTime.Now);
+    private readonly DispatcherTimer _midnightWatcher;
 
     public Array PriorityOptions { get; } = Enum.GetValues(typeof(TaskPriority));
 
@@ -28,7 +32,7 @@ public sealed partial class TasksViewModel : ObservableObject
 
     private async Task LoadAsync()
     {
-        var tasks = await _taskService.GetAllTasksAsync();
+        var tasks = await _taskService.GetTasksForTodayAsync();
         AllTasks.Clear();
         foreach (var t in tasks)
             AllTasks.Add(t);
@@ -65,10 +69,23 @@ public sealed partial class TasksViewModel : ObservableObject
 
    private readonly IDialogService _dialogService;
   
-  public TasksViewModel(ITaskService taskService, IDialogService dialogService)
+   public TasksViewModel(ITaskService taskService, IDialogService dialogService)
   {
       _taskService = taskService;
       _dialogService = dialogService;
+  
+      _midnightWatcher = new DispatcherTimer { Interval = TimeSpan.FromSeconds(30) };
+      _midnightWatcher.Tick += async (_, _) =>
+      {
+          var today = DateOnly.FromDateTime(DateTime.Now);
+          if (today != _loadedDate)
+          {
+              _loadedDate = today;
+              await LoadAsync();
+          }
+      };
+      _midnightWatcher.Start();
+  
       _ = LoadAsync();
   }
   

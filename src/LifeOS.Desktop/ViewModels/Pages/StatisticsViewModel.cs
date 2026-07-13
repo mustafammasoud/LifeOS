@@ -86,9 +86,9 @@ public sealed partial class StatisticsViewModel : ObservableObject
     TotalTasksCompleted = completed;
 
     WeeklyTaskCompletionPercent =
-        created == 0
-            ? 0
-            : completed * 100.0 / created;
+    created == 0
+        ? 0
+        : Math.Min(100, completed * 100.0 / created);
 
     WeeklyTasks.Clear();
 
@@ -150,21 +150,29 @@ public sealed partial class StatisticsViewModel : ObservableObject
     HabitsCompletionPercent = habits.Count == 0
         ? 0
         : habits.Count(h => h.IsCompletedToday) * 100.0 / habits.Count;
+        
+        HabitStreaks.Clear();
+
+       foreach (var h in habits.OrderByDescending(h => h.CurrentStreak))
+       {
+           HabitStreaks.Add(new HabitStat
+           {
+               Name = h.Habit.Name,
+               Streak = h.CurrentStreak
+           });
+       }
 
     // ==========================
     // Goals
     // ==========================
 
-    var (completedGoals, activeGoals) =
-        await _goalService.GetGoalsSummaryAsync();
+   var (completedGoals, activeGoals) =
+    await _goalService.GetGoalsSummaryAsync();
 
     GoalsCompleted = completedGoals;
     GoalsActive = activeGoals;
-
-    GoalsCompletionPercent =
-        (completedGoals + activeGoals) == 0
-            ? 0
-            : completedGoals * 100.0 / (completedGoals + activeGoals);
+    
+    GoalsCompletionPercent = await _goalService.GetAverageProgressPercentAsync(); 
 
     OnPropertyChanged(nameof(WeeklyTaskCompletionPercent));
     OnPropertyChanged(nameof(HabitsCompletionPercent));
