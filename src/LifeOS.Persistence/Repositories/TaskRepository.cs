@@ -11,18 +11,22 @@ public class TaskRepository : ITaskRepository
     public TaskRepository(LifeOSDbContext context) => _context = context;
 
     public Task<List<TaskItem>> GetAllAsync() =>
-        _context.Tasks.OrderBy(t => t.IsCompleted).ThenBy(t => t.DueDate).ToListAsync();
+     _context.Tasks
+        .OrderBy(t => t.IsCompleted)
+        .ThenByDescending(t => t.Priority)
+        .ThenBy(t => t.DueDate)
+        .ToListAsync();
 
     public Task<List<TaskItem>> GetDueTodayAsync()
-    {
-        var today = DateTime.Today;
-        var tomorrow = today.AddDays(1);
-
-        return _context.Tasks
-            .Where(t => !t.IsCompleted && t.DueDate != null && t.DueDate >= today && t.DueDate < tomorrow)
-            .OrderBy(t => t.Priority)
-            .ToListAsync();
-    }
+   {
+       var today = DateTime.Today;
+       var tomorrow = today.AddDays(1);
+   
+       return _context.Tasks
+           .Where(t => !t.IsCompleted && t.DueDate != null && t.DueDate >= today && t.DueDate < tomorrow)
+           .OrderByDescending(t => t.Priority)
+           .ToListAsync();
+   }
 
     public Task<TaskItem?> GetByIdAsync(Guid id) =>
         _context.Tasks.FirstOrDefaultAsync(t => t.Id == id);
