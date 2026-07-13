@@ -1,0 +1,30 @@
+<svg width="512" height="512" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#1A1A22"/>
+      <stop offset="100%" stop-color="#101014"/>
+    </linearGradient>
+    <linearGradient id="accent" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#8B5CF6"/>
+      <stop offset="100%" stop-color="#4F46E5"/>
+    </linearGradient>
+  </defs>
+
+  <!-- background -->
+  <rect width="512" height="512" rx="112" fill="url(#bg)"/>
+
+  <!-- orbit ring representing habits/cycles -->
+  <circle cx="256" cy="256" r="140" fill="none" stroke="#2A2A34" stroke-width="14"/>
+
+  <!-- progress arc representing goals/progress -->
+  <path d="M 256 116 A 140 140 0 0 1 396 256"
+        fill="none" stroke="url(#accent)" stroke-width="14" stroke-linecap="round"/>
+
+  <!-- orbiting node -->
+  <circle cx="396" cy="256" r="16" fill="#A78BFA"/>
+
+  <!-- checkmark representing tasks -->
+  <path d="M 196 260 L 236 300 L 320 210"
+        fill="none" stroke="#F5F5F7" stroke-width="22"
+        stroke-linecap="round" stroke-linejoin="round"/>
+</svg>

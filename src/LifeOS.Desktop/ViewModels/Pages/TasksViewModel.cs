@@ -30,14 +30,14 @@ public sealed partial class TasksViewModel : ObservableObject
     }
 
     [RelayCommand]
-    private async Task AddTaskAsync()
-    {
-        if (string.IsNullOrWhiteSpace(NewTaskTitle)) return;
-
-        await _taskService.AddTaskAsync(NewTaskTitle, NewTaskPriority);
-        NewTaskTitle = string.Empty;
-        await LoadAsync();
-    }
+   private async Task AddTaskAsync()
+   {
+       if (string.IsNullOrWhiteSpace(NewTaskTitle)) return;
+   
+       await _taskService.AddTaskAsync(NewTaskTitle, NewTaskPriority, DateTime.Today);
+       NewTaskTitle = string.Empty;
+       await LoadAsync();
+   }
 
     [RelayCommand]
     private async Task ToggleCompleteAsync(TaskItem task)
