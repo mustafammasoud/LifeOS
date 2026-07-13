@@ -7,6 +7,7 @@ using LifeOS.Desktop.Services;
 using LifeOS.Desktop.ViewModels.Pages;
 using Material.Icons;
 using Microsoft.Extensions.DependencyInjection;
+using LifeOS.Desktop.Navigation; 
 
 namespace LifeOS.Desktop.ViewModels;
 
@@ -55,8 +56,13 @@ public sealed partial class MainWindowViewModel : ObservableObject
     }
 
     partial void OnSelectedNavigationItemChanged(NavigationItemViewModel value)
-    {
+    {  
         CurrentPage = ResolvePage(value.Key);
+
+    if (CurrentPage is INavigationAware aware)
+    {
+        _ = aware.OnNavigatedToAsync();
+    }
     }
 
     private ObservableObject ResolvePage(PageKey key) => key switch

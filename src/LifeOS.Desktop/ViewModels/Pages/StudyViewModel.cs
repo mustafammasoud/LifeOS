@@ -9,15 +9,17 @@ using LifeOS.Domain.Study;
 using LifeOS.Infrastructure.Notifications;
 using System.Collections.Generic;
 using LifeOS.Desktop.Services;
+using LifeOS.Desktop.Navigation;
 
 namespace LifeOS.Desktop.ViewModels.Pages;
 
-public sealed partial class StudyViewModel : ObservableObject
+public sealed partial class StudyViewModel : ObservableObject , INavigationAware
 {
     public List<int> DurationOptions { get; } = new() { 5, 15, 25, 45, 60 };
     private readonly IStudyService _studyService;
     private readonly INotificationService _notificationService;
     private readonly DispatcherTimer _timer;
+    public Task OnNavigatedToAsync() => LoadAsync();
 
     public ObservableCollection<Subject> Subjects { get; } = new();
     public ObservableCollection<PomodoroSession> TodaySessions { get; } = new();
