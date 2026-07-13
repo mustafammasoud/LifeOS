@@ -45,17 +45,17 @@ public sealed class HabitService : IHabitService
     }
 
     public async Task LogProgressAsync(Guid habitId, int increment = 1)
-  {
-    var habit = await _repository.GetByIdAsync(habitId);
-    var today = DateOnly.FromDateTime(DateTime.Today);
-    var log = await _repository.GetLogAsync(habitId, today) ?? new HabitLog { HabitId = habitId, Date = today };
-
-    log.Count += increment;
-    await _repository.UpsertLogAsync(log);
-
-    if (habit != null)
-        await _activityLog.LogAsync("💧", $"Completed Habit: {habit.Name}");
-  }
+   {
+       var habit = await _repository.GetByIdAsync(habitId);
+       var today = DateOnly.FromDateTime(DateTime.Today);
+       var log = await _repository.GetLogAsync(habitId, today) ?? new HabitLog { HabitId = habitId, Date = today };
+   
+       log.Count = Math.Max(0, log.Count + increment);   
+       await _repository.UpsertLogAsync(log);
+   
+       if (habit != null && increment > 0)
+           await _activityLog.LogAsync("💧", $"Completed Habit: {habit.Name}");
+   }
 
     private async Task<int> CalculateStreakAsync(Habit habit, DateOnly today)
     {

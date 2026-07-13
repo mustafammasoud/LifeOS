@@ -10,4 +10,5 @@ public interface ITaskRepository
     Task AddAsync(TaskItem task);
     Task UpdateAsync(TaskItem task);
     Task DeleteAsync(Guid id);
+    Task<List<TaskItem>> GetByStatisticsDateAsync(DateOnly date);
 }

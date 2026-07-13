@@ -35,35 +35,31 @@ public sealed class TaskService : ITaskService
         };
 
         await _repository.AddAsync(task);
-        await _dailyStatistics.RegisterTaskCreatedAsync(
-                     DateOnly.FromDateTime(task.CreatedAt));
+        await _dailyStatistics.RegisterTaskCreatedAsync(task.StatisticsDate);
         return task;
     }
 
    public async Task SetCompletedAsync(Guid id, bool isCompleted)
-   {
-       var task = await _repository.GetByIdAsync(id);
-       if (task is null)
-           return;
-   
-       task.IsCompleted = isCompleted;
-       task.CompletedAt = isCompleted ? DateTime.UtcNow : null;
-   
-       await _repository.UpdateAsync(task);
-       var day = DateOnly.FromDateTime(DateTime.Now);
-
-     if (isCompleted)
-     {
-         await _dailyStatistics.RegisterTaskCompletedAsync(day);
-     }
-     else
-     {
-         await _dailyStatistics.RegisterTaskUnCompletedAsync(day);
-     }
-   
-       if (isCompleted)
-           await _activityLog.LogAsync("✅", $"Completed \"{task.Title}\"");
-   }
+  {
+      var task = await _repository.GetByIdAsync(id);
+      if (task is null)
+          return;
+  
+      task.IsCompleted = isCompleted;
+      task.CompletedAt = isCompleted ? DateTime.UtcNow : null;
+  
+      await _repository.UpdateAsync(task);
+  
+      var day = task.StatisticsDate;   
+  
+      if (isCompleted)
+          await _dailyStatistics.RegisterTaskCompletedAsync(day);
+      else
+          await _dailyStatistics.RegisterTaskUnCompletedAsync(day);
+  
+      if (isCompleted)
+          await _activityLog.LogAsync("✅", $"Completed \"{task.Title}\"");
+  }
 
 
    public async Task DeleteTaskAsync(Guid id)
@@ -75,8 +71,8 @@ public sealed class TaskService : ITaskService
   
       await _repository.DeleteAsync(id);
   
-      await _dailyStatistics.RegisterTaskDeletedAsync(
-          DateOnly.FromDateTime(task.CreatedAt),
-          task.IsCompleted);
+      await _dailyStatistics.RegisterTaskDeletedAsync(task.StatisticsDate, task.IsCompleted); 
   }
+  public Task<List<TaskItem>> GetTasksForTodayAsync()
+    => _repository.GetByStatisticsDateAsync(DateOnly.FromDateTime(DateTime.Now));
 }

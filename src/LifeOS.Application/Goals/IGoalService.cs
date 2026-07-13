@@ -11,5 +11,6 @@ public interface IGoalService
     Task ToggleMilestoneAsync(Guid goalId, Guid milestoneId);
     Task DeleteGoalAsync(Guid goalId);
     Task<(int Completed, int Active)> GetGoalsSummaryAsync();
+    Task<double> GetAverageProgressPercentAsync();
     
 }

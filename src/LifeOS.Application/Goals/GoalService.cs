@@ -87,4 +87,32 @@ public sealed class GoalService : IGoalService
         var goals = await _repository.GetAllAsync();
         return (goals.Count(g => g.IsCompleted), goals.Count(g => !g.IsCompleted));
     }
+    public async Task<double> GetAverageProgressPercentAsync()
+{
+    var goals = await _repository.GetAllAsync();
+
+    if (goals.Count == 0)
+        return 0;
+
+    var total = goals.Sum(GetProgressPercent);
+
+    return total / goals.Count;
+}
+
+private static double GetProgressPercent(Goal goal)
+  {
+      if (goal.IsCompleted)
+          return 100;
+  
+      return goal.TrackingMode switch
+      {
+          GoalTrackingMode.Manual => goal.ManualProgressPercent,
+  
+          GoalTrackingMode.Milestones => goal.Milestones.Count == 0
+              ? 0
+              : goal.Milestones.Count(m => m.IsCompleted) * 100.0 / goal.Milestones.Count,
+  
+          _ => 0
+      };
+  }
 }
