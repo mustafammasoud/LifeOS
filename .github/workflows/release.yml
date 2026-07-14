@@ -1,0 +1,166 @@
+name: Build and Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  build-windows:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
+
+      - name: Publish app
+        run: dotnet publish src/LifeOS.Desktop -c Release -r win-x64 --self-contained true -p:PublishSingleFile=true -o ./publish/win-x64
+
+      - name: Install Inno Setup
+        run: choco install innosetup -y
+
+      - name: Build installer
+        run: iscc installer/setup.iss
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: LifeOS-Setup-Windows
+          path: installer/output/LifeOS-Setup.exe
+
+  build-linux:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
+
+      - name: Publish app
+        run: dotnet publish src/LifeOS.Desktop -c Release -r linux-x64 --self-contained true -p:PublishSingleFile=true -o ./dist/LifeOS-linux-x64
+
+      - name: Prepare package
+        run: |
+          cp src/LifeOS.Desktop/Assets/logo-512.png dist/LifeOS-linux-x64/icon.png
+          chmod +x dist/LifeOS-linux-x64/LifeOS.Desktop
+          cat > dist/LifeOS-linux-x64/install.sh << 'INSTALLEOF'
+          #!/bin/bash
+          set -e
+          SOURCE_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+          APP_DIR="$HOME/.local/share/LifeOSApp"
+          DESKTOP_FILE="$HOME/.local/share/applications/lifeos.desktop"
+          echo "📦 Installing LifeOS..."
+          mkdir -p "$APP_DIR"
+          cp -r "$SOURCE_DIR"/* "$APP_DIR/"
+          chmod +x "$APP_DIR/LifeOS.Desktop"
+          cat > "$DESKTOP_FILE" << DESKTOP
+          [Desktop Entry]
+          Type=Application
+          Name=LifeOS
+          Comment=Personal life management app
+          Exec=$APP_DIR/LifeOS.Desktop
+          Icon=$APP_DIR/icon.png
+          Terminal=false
+          Categories=Utility;Office;
+          DESKTOP
+          chmod +x "$DESKTOP_FILE"
+          update-desktop-database "$HOME/.local/share/applications/" 2>/dev/null || true
+          if [ -d "$HOME/Desktop" ]; then
+              cp "$DESKTOP_FILE" "$HOME/Desktop/lifeos.desktop"
+              chmod +x "$HOME/Desktop/lifeos.desktop"
+          fi
+          echo "✅ Done! Find LifeOS in your application menu or on your Desktop."
+          INSTALLEOF
+          chmod +x dist/LifeOS-linux-x64/install.sh
+          cd dist && zip -r LifeOS-linux-x64.zip LifeOS-linux-x64
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: LifeOS-Linux
+          path: dist/LifeOS-linux-x64.zip
+
+  build-macos:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x'
+
+      - name: Publish app (Intel)
+        run: dotnet publish src/LifeOS.Desktop -c Release -r osx-x64 --self-contained true -p:PublishSingleFile=true -o ./publish/osx-x64
+
+      - name: Publish app (Apple Silicon)
+        run: dotnet publish src/LifeOS.Desktop -c Release -r osx-arm64 --self-contained true -p:PublishSingleFile=true -o ./publish/osx-arm64
+
+      - name: Build .app bundle (Intel)
+        run: |
+          mkdir -p "dist/LifeOS.app/Contents/MacOS"
+          mkdir -p "dist/LifeOS.app/Contents/Resources"
+          cp -r publish/osx-x64/* "dist/LifeOS.app/Contents/MacOS/"
+          chmod +x "dist/LifeOS.app/Contents/MacOS/LifeOS.Desktop"
+          cat > "dist/LifeOS.app/Contents/Info.plist" << 'PLISTEOF'
+          <?xml version="1.0" encoding="UTF-8"?>
+          <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd"\>
+          <plist version="1.0">
+          <dict>
+              <key>CFBundleExecutable</key>
+              <string>LifeOS.Desktop</string>
+              <key>CFBundleIconFile</key>
+              <string>icon.icns</string>
+              <key>CFBundleIdentifier</key>
+              <string>com.kaidoms.lifeos</string>
+              <key>CFBundleName</key>
+              <string>LifeOS</string>
+              <key>CFBundleVersion</key>
+              <string>1.0.0</string>
+              <key>CFBundlePackageType</key>
+              <string>APPL</string>
+          </dict>
+          </plist>
+          PLISTEOF
+
+      - name: Create DMG
+        run: |
+          brew install create-dmg || true
+          create-dmg \
+            --volname "LifeOS Installer" \
+            --window-size 500 300 \
+            --icon-size 100 \
+            --app-drop-link 380 120 \
+            "dist/LifeOS-macOS.dmg" \
+            "dist/LifeOS.app" || true
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: LifeOS-macOS
+          path: dist/LifeOS-macOS.dmg
+
+  release:
+    needs: [build-windows, build-linux, build-macos]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download all artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            artifacts/LifeOS-Setup-Windows/LifeOS-Setup.exe
+            artifacts/LifeOS-Linux/LifeOS-linux-x64.zip
+            artifacts/LifeOS-macOS/LifeOS-macOS.dmg
+          generate_release_notes: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
