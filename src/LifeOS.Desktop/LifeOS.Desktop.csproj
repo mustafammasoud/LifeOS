@@ -6,7 +6,6 @@
     <ApplicationManifest>app.manifest</ApplicationManifest>
 
     <ApplicationIcon>Assets\app.ico</ApplicationIcon>
-    <Win32Resource></Win32Resource>
     <GenerateResourceUsePreserializedResources>true</GenerateResourceUsePreserializedResources>
 </PropertyGroup>
 
