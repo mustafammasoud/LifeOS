@@ -4,14 +4,14 @@ AppVersion=1.0.0
 AppPublisher=Kaidoms
 DefaultDirName={autopf}\LifeOS
 DefaultGroupName=LifeOS
-OutputDir=installer\output
+OutputDir=output
 OutputBaseFilename=LifeOS-Setup
 Compression=lzma
 SolidCompression=yes
-SetupIconFile=src\LifeOS.Desktop\Assets\icon.ico
+SetupIconFile=..\src\LifeOS.Desktop\Assets\icon.ico
 
 [Files]
-Source: "publish\win-x64\*"; DestDir: "{app}"; Flags: recursesubdirs
+Source: "..\publish\win-x64\*"; DestDir: "{app}"; Flags: recursesubdirs
 
 [Icons]
 Name: "{group}\LifeOS"; Filename: "{app}\LifeOS.Desktop.exe"
