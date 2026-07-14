@@ -8,14 +8,14 @@ OutputDir=output
 OutputBaseFilename=LifeOS-Setup
 Compression=lzma
 SolidCompression=yes
-SetupIconFile=..\src\LifeOS.Desktop\Assets\icon.ico
+SetupIconFile=..\src\LifeOS.Desktop\Assets\app.ico
 
 [Files]
 Source: "..\publish\win-x64\*"; DestDir: "{app}"; Flags: recursesubdirs
 
 [Icons]
-Name: "{group}\LifeOS"; Filename: "{app}\LifeOS.Desktop.exe"
-Name: "{autodesktop}\LifeOS"; Filename: "{app}\LifeOS.Desktop.exe"
+Name: "{group}\LifeOS"; Filename: "{app}\LifeOS.Desktop.exe"; IconFilename: "{app}\LifeOS.Desktop.exe"
+Name: "{autodesktop}\LifeOS"; Filename: "{app}\LifeOS.Desktop.exe"; IconFilename: "{app}\LifeOS.Desktop.exe"
 
 [Tasks]
 Name: "desktopicon"; Description: "Create a desktop shortcut"; GroupDescription: "Additional icons:"
