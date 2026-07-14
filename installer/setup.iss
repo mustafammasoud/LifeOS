@@ -1,6 +1,10 @@
+#ifndef MyAppVersion
+  #define MyAppVersion "1.0.0"
+#endif
+
 [Setup]
 AppName=LifeOS
-AppVersion=1.0.0
+AppVersion={#MyAppVersion}
 AppPublisher=Kaidoms
 DefaultDirName={autopf}\LifeOS
 DefaultGroupName=LifeOS
@@ -19,3 +23,6 @@ Name: "{autodesktop}\LifeOS"; Filename: "{app}\LifeOS.Desktop.exe"; IconFilename
 
 [Tasks]
 Name: "desktopicon"; Description: "Create a desktop shortcut"; GroupDescription: "Additional icons:"
+
+[Run]
+Filename: "powershell.exe"; Parameters: "-NoProfile -ExecutionPolicy Bypass -Command ""Get-ChildItem -Path '{app}' -Recurse | Unblock-File"""; Flags: runhidden; StatusMsg: "Finishing setup..."
