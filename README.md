@@ -10,7 +10,7 @@ Tasks • Study Sessions • Habits • Goals • Events • Notes • Statistic
 [![Platform](https://img.shields.io/badge/platform-Windows%20%7C%20macOS%20%7C%20Linux-blue)]()
 [![License: MIT](https://img.shields.io/badge/license-MIT-green)](LICENSE)
 
-[**⬇️ Download LifeOS**](../../releases/latest) &nbsp;|&nbsp; [Features](#-features) &nbsp;|&nbsp; [Installation](#-installation) &nbsp;|&nbsp; [License](#-license)
+[**⬇️ Download LifeOS**](../../releases/latest) &nbsp;|&nbsp;  [Installation](#-installation) 
 
 </div>
 
@@ -106,7 +106,7 @@ Built as a cross-platform desktop app using **.NET 10** and **Avalonia UI**, fol
 If you'd rather build LifeOS yourself instead of using the prebuilt installers:
 
 ```bash
-git clone https://github.com/USERNAME/LifeOS.git
+git clone https://github.com/mustafammasoud/LifeOS.git 
 cd LifeOS
 dotnet run --project src/LifeOS.Desktop
 ```
@@ -117,6 +117,6 @@ Requires the [.NET 10 SDK](https://dotnet.microsoft.com/download).
 
 ## 📄 License
 
-This project is licensed under the **MIT License** — see [`LICENSE`](LICENSE) for the full text.
+This project is licensed under the **MIT License** .
 
 In short: you're free to use, copy, modify, and distribute this software, including for commercial purposes, as long as the original copyright notice is included.
