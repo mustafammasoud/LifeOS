@@ -11,4 +11,6 @@ public interface IStudyService
     Task<PomodoroSession> LogSessionAsync(Guid? subjectId, int durationMinutes, string? notes);
     Task<int> GetTodayFocusMinutesAsync();
     Task DeleteSubjectAsync(Guid subjectId);
+    Task<List<SubjectSummary>> GetSubjectSummariesForWeekAsync(DateOnly startDate);
+    
 }

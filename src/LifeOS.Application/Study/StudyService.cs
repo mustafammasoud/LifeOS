@@ -62,5 +62,27 @@ public sealed class StudyService : IStudyService
         return sessions.Sum(s => s.DurationMinutes);
     }
     public Task DeleteSubjectAsync(Guid subjectId) => _subjects.DeleteAsync(subjectId);
-   
+   public async Task<List<SubjectSummary>> GetSubjectSummariesForWeekAsync(DateOnly startDate)
+{
+    var subjects = await _subjects.GetAllAsync();
+    var weekSessions = await _sessions.GetWeekAsync(startDate);
+
+    var summaries = new List<SubjectSummary>();
+
+    foreach (var subject in subjects)
+    {
+        var minutes = weekSessions
+            .Where(s => s.SubjectId == subject.Id)
+            .Sum(s => s.DurationMinutes);
+
+        summaries.Add(new SubjectSummary
+        {
+            SubjectId = subject.Id,
+            SubjectName = subject.Name,
+            TotalMinutes = minutes
+        });
+    }
+
+    return summaries;
+}
 }
