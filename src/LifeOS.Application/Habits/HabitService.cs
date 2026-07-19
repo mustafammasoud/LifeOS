@@ -59,19 +59,25 @@ public sealed class HabitService : IHabitService
 
     private async Task<int> CalculateStreakAsync(Habit habit, DateOnly today)
     {
-        var logs = await _repository.GetLogsAsync(habit.Id, today.AddDays(-60), today);
-        var logsByDate = logs.ToDictionary(l => l.Date);
+    var logs = await _repository.GetLogsAsync(habit.Id, today.AddDays(-60), today);
+    var logsByDate = logs.ToDictionary(l => l.Date);
 
-        var streak = 0;
-        var date = today;
+    var streak = 0;
+    var date = today;
 
-        while (logsByDate.TryGetValue(date, out var log) && log.Count >= habit.TargetCount)
-        {
-            streak++;
-            date = date.AddDays(-1);
-        }
+    var doneToday = logsByDate.TryGetValue(today, out var todayLog)
+                     && todayLog.Count >= habit.TargetCount;
 
-        return streak;
+    if (!doneToday)
+        date = date.AddDays(-1); // النهارده لسه معملتش، ابدأ من إمبارح
+
+    while (logsByDate.TryGetValue(date, out var log) && log.Count >= habit.TargetCount)
+    {
+        streak++;
+        date = date.AddDays(-1);
+    }
+
+    return streak;
     }
 
     public Task DeleteHabitAsync(Guid habitId) => _repository.DeleteAsync(habitId);
