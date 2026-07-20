@@ -5,11 +5,15 @@ using LifeOS.Application.Habits;
 using LifeOS.Domain.Habits;
 using System.Threading.Tasks;
 using LifeOS.Desktop.Services;
+using System.Collections.Generic;
+using System;
 
 namespace LifeOS.Desktop.ViewModels.Pages;
 
 public sealed partial class HabitsViewModel : ObservableObject
 {
+    private readonly Dictionary<Guid, int> _dailyFloors = new();
+   private DateOnly _floorsDate = DateOnly.FromDateTime(DateTime.Today);
     private readonly IHabitService _habitService;
 
     public HabitsViewModel(IHabitService habitService, IDialogService dialogService)
@@ -24,10 +28,24 @@ public sealed partial class HabitsViewModel : ObservableObject
     private string _newHabitName = string.Empty;
     private async Task LoadAsync()
     {
-        var habits = await _habitService.GetTodayHabitsAsync();
-        Habits.Clear();
-        foreach (var h in habits)
-            Habits.Add(h);
+        var today = DateOnly.FromDateTime(DateTime.Today);
+
+    if (today != _floorsDate)
+    {
+        _dailyFloors.Clear();   
+        _floorsDate = today;
+    }
+
+    var habits = await _habitService.GetTodayHabitsAsync();
+    Habits.Clear();
+
+    foreach (var h in habits)
+    {
+        if (!_dailyFloors.ContainsKey(h.Habit.Id))
+            _dailyFloors[h.Habit.Id] = h.TodayCount;  
+
+        Habits.Add(h);
+    }
     }
 
     [RelayCommand]
@@ -53,14 +71,23 @@ private async Task DeleteHabitAsync(HabitProgress progress)
     [RelayCommand]
   private async Task IncrementProgressAsync(HabitProgress progress)
   {
-      await _habitService.LogProgressAsync(progress.Habit.Id, 1);
-      await LoadAsync();
-  }
+    if (progress.TodayCount >= progress.Habit.TargetCount)
+        return;
+
+    await _habitService.LogProgressAsync(progress.Habit.Id, 1);
+    await LoadAsync();
+    }
   
   [RelayCommand]
   private async Task DecrementProgressAsync(HabitProgress progress)
   {
-      await _habitService.LogProgressAsync(progress.Habit.Id, -1);
-      await LoadAsync();
+    var floor = _dailyFloors.TryGetValue(progress.Habit.Id, out var f) ? f : 0;
+
+    if (progress.TodayCount <= floor)
+        return;   
+
+    await _habitService.LogProgressAsync(progress.Habit.Id, -1);
+    await LoadAsync();
   }
 }
+

@@ -32,15 +32,20 @@ public sealed partial class TasksViewModel : ObservableObject
 
     private async Task LoadAsync()
     {
-        var tasks = await _taskService.GetTasksForTodayAsync();
-        AllTasks.Clear();
-        foreach (var t in tasks)
-            AllTasks.Add(t);
+        
+    var tasks = await _taskService.GetTasksForTodayAsync();
 
+    var sorted = tasks
+        .OrderByDescending(t => t.Priority)
+        .ToList();
 
-       TotalCount = tasks.Count;
-       CompletedCount = tasks.Count(t => t.IsCompleted);
-       RemainingCount = tasks.Count(t => !t.IsCompleted);
+    AllTasks.Clear();
+    foreach (var t in sorted)
+        AllTasks.Add(t);
+
+    TotalCount = tasks.Count;
+    CompletedCount = tasks.Count(t => t.IsCompleted);
+    RemainingCount = tasks.Count(t => !t.IsCompleted);
     }
 
     [RelayCommand]

@@ -12,7 +12,7 @@ public static class DependencyInjection
     {
         services.AddSingleton<MainWindowViewModel>();
         services.AddTransient<DashboardViewModel>();
-        services.AddTransient<HabitsViewModel>();
+        services.AddSingleton<HabitsViewModel>();
         services.AddSingleton<StudyViewModel>();
         services.AddTransient<GoalsViewModel>();
         services.AddTransient<NotesViewModel>();

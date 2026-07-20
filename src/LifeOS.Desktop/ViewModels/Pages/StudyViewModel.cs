@@ -7,19 +7,21 @@ using CommunityToolkit.Mvvm.Input;
 using LifeOS.Application.Study;
 using LifeOS.Domain.Study;
 using LifeOS.Infrastructure.Notifications;
+using LifeOS.Infrastructure.Settings;
 using System.Collections.Generic;
+using System.Linq;
 using LifeOS.Desktop.Services;
-using LifeOS.Desktop.Navigation;
 
 namespace LifeOS.Desktop.ViewModels.Pages;
 
-public sealed partial class StudyViewModel : ObservableObject , INavigationAware
+public sealed partial class StudyViewModel : ObservableObject
 {
     public List<int> DurationOptions { get; } = new() { 5, 15, 25, 45, 60 };
     private readonly IStudyService _studyService;
     private readonly INotificationService _notificationService;
+    private readonly ISettingsService _settingsService;
     private readonly DispatcherTimer _timer;
-    public Task OnNavigatedToAsync() => LoadAsync();
+    private int _ticksSinceLastSave;
 
     public ObservableCollection<Subject> Subjects { get; } = new();
     public ObservableCollection<PomodoroSession> TodaySessions { get; } = new();
@@ -47,16 +49,71 @@ public sealed partial class StudyViewModel : ObservableObject , INavigationAware
 
     public string TimeDisplay => $"{RemainingSeconds / 60:D2}:{RemainingSeconds % 60:D2}";
 
-      public StudyViewModel(IStudyService studyService, INotificationService notificationService,IDialogService dialogService)
+    public StudyViewModel(IStudyService studyService, INotificationService notificationService, IDialogService dialogService, ISettingsService settingsService)
     {
         _studyService = studyService;
         _notificationService = notificationService;
+        _settingsService = settingsService;
 
         _timer = new DispatcherTimer { Interval = TimeSpan.FromSeconds(1) };
         _timer.Tick += OnTick;
         _dialogService = dialogService;
-       
+
+        RestoreTimerState();
         _ = LoadAsync();
+    }
+
+    private void RestoreTimerState()
+    { 
+        
+    var settings = _settingsService.Current;
+
+    DurationMinutes = settings.StudyDurationMinutes;
+    IsRunning = settings.StudyIsRunning;
+
+    if (IsRunning && settings.StudyTargetEndTimeUtc is { } targetEnd)
+    {
+        var secondsLeft = (int)(targetEnd - DateTime.UtcNow).TotalSeconds;
+
+        if (secondsLeft <= 0)
+        {
+            RemainingSeconds = 0;
+            IsRunning = false;
+            _ = CompleteSessionAsync();
+        }
+        else
+        {
+            RemainingSeconds = secondsLeft;
+            _timer.Start();
+        }
+    }
+    else
+    {
+        RemainingSeconds = settings.StudyRemainingSeconds;
+    }
+    }
+
+    private void SaveTimerState()
+    {
+    var settings = _settingsService.Current;
+
+    settings.StudyDurationMinutes = DurationMinutes;
+    settings.StudyIsRunning = IsRunning;
+    settings.StudySelectedSubjectId = SelectedSubject?.Id;
+
+    if (IsRunning)
+    {
+        settings.StudyTargetEndTimeUtc = DateTime.UtcNow.AddSeconds(RemainingSeconds);
+        settings.StudyRemainingSeconds = RemainingSeconds; // احتياطي
+    }
+    else
+    {
+        settings.StudyRemainingSeconds = RemainingSeconds;
+        settings.StudyTargetEndTimeUtc = null;
+    }
+
+    _settingsService.Save(settings);
+    
     }
 
     private async Task LoadAsync()
@@ -64,6 +121,10 @@ public sealed partial class StudyViewModel : ObservableObject , INavigationAware
         Subjects.Clear();
         foreach (var s in await _studyService.GetSubjectsAsync())
             Subjects.Add(s);
+
+        var savedSubjectId = _settingsService.Current.StudySelectedSubjectId;
+        if (savedSubjectId is not null)
+            SelectedSubject = Subjects.FirstOrDefault(s => s.Id == savedSubjectId);
 
         TodaySessions.Clear();
         foreach (var s in await _studyService.GetTodaySessionsAsync())
@@ -75,10 +136,15 @@ public sealed partial class StudyViewModel : ObservableObject , INavigationAware
     partial void OnDurationMinutesChanged(int value)
     {
         if (!IsRunning)
+        {
             RemainingSeconds = value * 60;
+            SaveTimerState();
+        }
     }
 
     partial void OnRemainingSecondsChanged(int value) => OnPropertyChanged(nameof(TimeDisplay));
+
+    partial void OnSelectedSubjectChanged(Subject? value) => SaveTimerState();
 
     [RelayCommand]
     private void Start()
@@ -86,6 +152,7 @@ public sealed partial class StudyViewModel : ObservableObject , INavigationAware
         if (IsRunning) return;
         IsRunning = true;
         _timer.Start();
+        SaveTimerState();
     }
 
     [RelayCommand]
@@ -93,6 +160,7 @@ public sealed partial class StudyViewModel : ObservableObject , INavigationAware
     {
         IsRunning = false;
         _timer.Stop();
+        SaveTimerState();
     }
 
     [RelayCommand]
@@ -101,11 +169,19 @@ public sealed partial class StudyViewModel : ObservableObject , INavigationAware
         IsRunning = false;
         _timer.Stop();
         RemainingSeconds = DurationMinutes * 60;
+        SaveTimerState();
     }
 
     private async void OnTick(object? sender, EventArgs e)
     {
         RemainingSeconds--;
+
+        _ticksSinceLastSave++;
+        if (_ticksSinceLastSave >= 5)
+        {
+            SaveTimerState();
+            _ticksSinceLastSave = 0;
+        }
 
         if (RemainingSeconds <= 0)
         {
@@ -115,7 +191,7 @@ public sealed partial class StudyViewModel : ObservableObject , INavigationAware
         }
     }
 
-     private async Task CompleteSessionAsync()
+    private async Task CompleteSessionAsync()
     {
         _notificationService.Notify("LifeOS", " session finished!");
 
@@ -126,6 +202,7 @@ public sealed partial class StudyViewModel : ObservableObject , INavigationAware
 
         SessionNotes = string.Empty;
         RemainingSeconds = DurationMinutes * 60;
+        SaveTimerState();
         await LoadAsync();
     }
 
@@ -141,12 +218,11 @@ public sealed partial class StudyViewModel : ObservableObject , INavigationAware
 
     private readonly IDialogService _dialogService;
 
-
-[RelayCommand]
-private async Task DeleteSubjectAsync(Subject subject)
-{
-    if (!await _dialogService.ConfirmAsync("Delete Subject", $"Delete \"{subject.Name}\"?")) return;
-    await _studyService.DeleteSubjectAsync(subject.Id);
-    await LoadAsync();
-}
+    [RelayCommand]
+    private async Task DeleteSubjectAsync(Subject subject)
+    {
+        if (!await _dialogService.ConfirmAsync("Delete Subject", $"Delete \"{subject.Name}\"?")) return;
+        await _studyService.DeleteSubjectAsync(subject.Id);
+        await LoadAsync();
+    }
 }
