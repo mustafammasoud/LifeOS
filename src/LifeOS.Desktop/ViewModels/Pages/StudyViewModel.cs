@@ -63,35 +63,42 @@
             _ = LoadAsync();
         }
 
+        private bool _isRestoring;
         private void RestoreTimerState()
-        { 
-            
-        var settings = _settingsService.Current;
+    { 
+       
+    _isRestoring = true;
 
-        DurationMinutes = settings.StudyDurationMinutes;
-        IsRunning = settings.StudyIsRunning;
+    var settings = _settingsService.Current;
 
-        if (IsRunning && settings.StudyTargetEndTimeUtc is { } targetEnd)
+    DurationMinutes = settings.StudyDurationMinutes;
+    IsRunning = settings.StudyIsRunning;
+
+    if (IsRunning && settings.StudyTargetEndTimeUtc is { } targetEnd)
+    {
+        var secondsLeft = (int)(targetEnd - DateTime.UtcNow).TotalSeconds;
+
+        if (secondsLeft <= 0)
         {
-            var secondsLeft = (int)(targetEnd - DateTime.UtcNow).TotalSeconds;
-
-            if (secondsLeft <= 0)
-            {
-                RemainingSeconds = 0;
-                IsRunning = false;
-                _ = CompleteSessionAsync();
-            }
-            else
-            {
-                RemainingSeconds = secondsLeft;
-                _timer.Start();
-            }
+            RemainingSeconds = 0;
+            IsRunning = false;
+            _ = CompleteSessionAsync();
         }
         else
         {
-            RemainingSeconds = settings.StudyRemainingSeconds;
+            RemainingSeconds = secondsLeft;
+            _timer.Start();
         }
-        }
+    }
+    else
+    {
+        RemainingSeconds = settings.StudyRemainingSeconds;
+    }
+
+    _isRestoring = false;
+
+          
+}
 
         private void SaveTimerState()
         {
@@ -135,6 +142,8 @@
 
         partial void OnDurationMinutesChanged(int value)
         {
+            if (_isRestoring) return;   
+
             if (!IsRunning)
             {
                 RemainingSeconds = value * 60;
@@ -144,7 +153,11 @@
 
         partial void OnRemainingSecondsChanged(int value) => OnPropertyChanged(nameof(TimeDisplay));
 
-        partial void OnSelectedSubjectChanged(Subject? value) => SaveTimerState();
+        partial void OnSelectedSubjectChanged(Subject? value) 
+        {
+         if (_isRestoring) return; 
+            SaveTimerState();
+        }
 
         [RelayCommand]
         private void Start()
