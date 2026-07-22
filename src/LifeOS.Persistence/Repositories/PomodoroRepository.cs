@@ -29,4 +29,13 @@ public class PomodoroRepository : IPomodoroRepository
         _context.PomodoroSessions.Add(session);
         await _context.SaveChangesAsync();
     }
+       public Task<List<PomodoroSession>> GetWeekAsync(DateOnly startDate)
+   {
+       var start = startDate.ToDateTime(TimeOnly.MinValue);
+       var end = start.AddDays(7);
+   
+       return _context.PomodoroSessions
+           .Where(p => p.StartedAt >= start && p.StartedAt < end)
+           .ToListAsync();
+   }
 }
