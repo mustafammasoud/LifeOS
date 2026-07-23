@@ -12,5 +12,11 @@ public class TaskItemConfiguration : IEntityTypeConfiguration<TaskItem>
         builder.HasKey(t => t.Id);
         builder.Property(t => t.Title).IsRequired().HasMaxLength(200);
         builder.Property(t => t.Notes).HasMaxLength(2000);
+
+        builder.Property(t => t.Tags)
+            .HasConversion(
+                v => string.Join(',', v),
+                v => v == "" ? new List<string>() : v.Split(',', StringSplitOptions.RemoveEmptyEntries).ToList())
+            .HasMaxLength(500);
     }
 }

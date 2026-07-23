@@ -38,4 +38,6 @@ public class PomodoroRepository : IPomodoroRepository
            .Where(p => p.StartedAt >= start && p.StartedAt < end)
            .ToListAsync();
    }
+   public Task<List<PomodoroSession>> GetAllAsync() =>
+    _context.PomodoroSessions.ToListAsync();
 }
