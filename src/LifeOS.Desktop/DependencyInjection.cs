@@ -12,8 +12,8 @@ public static class DependencyInjection
     {
         services.AddSingleton<MainWindowViewModel>();
         services.AddTransient<DashboardViewModel>();
-        services.AddSingleton<HabitsViewModel>();
-        services.AddSingleton<StudyViewModel>();
+        services.AddTransient<HabitsViewModel>();   
+        services.AddTransient<StudyViewModel>();   
         services.AddTransient<GoalsViewModel>();
         services.AddTransient<NotesViewModel>();
         services.AddTransient<CalendarViewModel>();

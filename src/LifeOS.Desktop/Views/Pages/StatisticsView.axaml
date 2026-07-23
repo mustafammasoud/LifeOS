@@ -146,6 +146,34 @@
                     </ItemsControl>
                 </StackPanel>
             </Border>
+            <!-- Study time heatmap -->
+              <Border Classes="Card" Padding="20" CornerRadius="12">
+                  <StackPanel Spacing="16">
+                      <StackPanel Orientation="Horizontal" Spacing="8">
+                          <mi:MaterialIcon Kind="ClockTimeFourOutline" Width="18" Height="18" Foreground="#39d353" />
+                          <TextBlock Text="Best Study Hours (All Time)" FontWeight="SemiBold" FontSize="15" />
+                      </StackPanel>
+              
+                      <ItemsControl ItemsSource="{Binding StudyHeatmap}">
+                          <ItemsControl.ItemsPanel>
+                              <ItemsPanelTemplate>
+                                  <UniformGrid Columns="12" />
+                              </ItemsPanelTemplate>
+                          </ItemsControl.ItemsPanel>
+                          <ItemsControl.ItemTemplate>
+                              <DataTemplate>
+                                  <StackPanel Spacing="4" Margin="2">
+                                      <Border Width="32" Height="32" CornerRadius="6"
+                                              Background="{Binding Color}"
+                                              ToolTip.Tip="{Binding Tooltip}" />
+                                      <TextBlock Text="{Binding Label}" FontSize="9" HorizontalAlignment="Center"
+                                                 Foreground="{DynamicResource LifeOS.Brush.TextSecondary}" />
+                                  </StackPanel>
+                              </DataTemplate>
+                          </ItemsControl.ItemTemplate>
+                      </ItemsControl>
+                  </StackPanel>
+              </Border>
 
             <!-- Habit streaks -->
             <Border Classes="Card" Padding="20" CornerRadius="12">
@@ -172,6 +200,30 @@
                     </ItemsControl>
                 </StackPanel>
             </Border>
+            <!-- Monthly contribution graph -->
+<Border Classes="Card" Padding="20" CornerRadius="12">
+    <StackPanel Spacing="16">
+        <StackPanel Orientation="Horizontal" Spacing="8">
+            <mi:MaterialIcon Kind="CalendarBlank" Width="18" Height="18" Foreground="#39d353" />
+            <TextBlock Text="Last 30 Days" FontWeight="SemiBold" FontSize="15" />
+        </StackPanel>
+
+        <ItemsControl ItemsSource="{Binding ContributionGraph}">
+            <ItemsControl.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <WrapPanel Orientation="Horizontal" />
+                </ItemsPanelTemplate>
+            </ItemsControl.ItemsPanel>
+            <ItemsControl.ItemTemplate>
+                <DataTemplate>
+                    <Border Width="18" Height="18" CornerRadius="4" Margin="3"
+                            Background="{Binding Color}"
+                            ToolTip.Tip="{Binding Tooltip}" />
+                </DataTemplate>
+            </ItemsControl.ItemTemplate>
+        </ItemsControl>
+                   </StackPanel>
+               </Border>
             <!-- Weekly progress trend -->
              <Border Classes="Card" Padding="20" CornerRadius="12">
                  <StackPanel Spacing="16">

@@ -40,30 +40,70 @@
                     <TextBox Text="{Binding NewTaskTitle}" Watermark="New task..." />
                     <ComboBox ItemsSource="{Binding PriorityOptions}"
                               SelectedItem="{Binding NewTaskPriority}" />
+                    <TextBox Text="{Binding NewTaskTagsText}" Watermark="Tags (comma separated, e.g. work, study)" />
                     <Button Content="Add" Command="{Binding AddTaskCommand}" HorizontalAlignment="Left" />
                 </StackPanel>
             </Border>
 
-            <ItemsControl ItemsSource="{Binding AllTasks}">
+            <!-- Tag filter bar -->
+            <ItemsControl ItemsSource="{Binding AvailableTags}">
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <WrapPanel Orientation="Horizontal" />
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate x:DataType="x:String">
+                        <Button Content="{Binding}" Margin="0,0,6,6" Padding="10,4" CornerRadius="12"
+                                Command="{Binding $parent[ItemsControl].((vm:TasksViewModel)DataContext).SetTagFilterCommand}"
+                                CommandParameter="{Binding}" />
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+
+            <Button Content="✕ Clear filter" HorizontalAlignment="Left"
+                    Command="{Binding ClearTagFilterCommand}"
+                    IsVisible="{Binding SelectedTagFilter, Converter={x:Static ObjectConverters.IsNotNull}}" />
+
+            <ItemsControl ItemsSource="{Binding FilteredTasks}">
                 <ItemsControl.ItemTemplate>
                     <DataTemplate x:DataType="tasks:TaskItem">
                         <Border Classes="Card" Margin="0,4">
-                            <DockPanel>
-                                <Button DockPanel.Dock="Right" Content="Delete"
-                                        Command="{Binding $parent[ItemsControl].((vm:TasksViewModel)DataContext).DeleteTaskCommand}"
-                                        CommandParameter="{Binding}" />
+                            <StackPanel>
+                                <DockPanel>
+                                    <Button DockPanel.Dock="Right" Content="Delete"
+                                            Command="{Binding $parent[ItemsControl].((vm:TasksViewModel)DataContext).DeleteTaskCommand}"
+                                            CommandParameter="{Binding}" />
 
-                                <Border DockPanel.Dock="Left" Width="4" CornerRadius="2" Margin="0,0,10,0"
-                                        Background="{Binding Priority, Converter={x:Static conv:PriorityColorConverter.Instance}}" />
+                                    <Border DockPanel.Dock="Left" Width="4" CornerRadius="2" Margin="0,0,10,0"
+                                            Background="{Binding Priority, Converter={x:Static conv:PriorityColorConverter.Instance}}" />
 
-                              <CheckBox DockPanel.Dock="Left"
-                                  IsChecked="{Binding IsCompleted}"
-                                  Command="{Binding $parent[ItemsControl].((vm:TasksViewModel)DataContext).ToggleCompleteCommand}"
-                                  CommandParameter="{Binding}"
-                                  IsEnabled="True" />
+                                    <CheckBox DockPanel.Dock="Left"
+                                        IsChecked="{Binding IsCompleted}"
+                                        Command="{Binding $parent[ItemsControl].((vm:TasksViewModel)DataContext).ToggleCompleteCommand}"
+                                        CommandParameter="{Binding}"
+                                        IsEnabled="True" />
 
-                                <TextBlock Text="{Binding Title}" VerticalAlignment="Center" Margin="8,0,0,0" />
-                            </DockPanel>
+                                    <TextBlock Text="{Binding Title}" VerticalAlignment="Center" Margin="8,0,0,0" />
+                                </DockPanel>
+
+                                <ItemsControl ItemsSource="{Binding Tags}" Margin="26,6,0,0"
+                                              IsVisible="{Binding Tags.Count}">
+                                    <ItemsControl.ItemsPanel>
+                                        <ItemsPanelTemplate>
+                                            <WrapPanel Orientation="Horizontal" />
+                                        </ItemsPanelTemplate>
+                                    </ItemsControl.ItemsPanel>
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate x:DataType="x:String">
+                                            <Border Background="{DynamicResource LifeOS.Brush.CardBackgroundHover}"
+                                                    CornerRadius="8" Padding="8,2" Margin="0,0,6,0">
+                                                <TextBlock Text="{Binding}" FontSize="11" />
+                                            </Border>
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+                            </StackPanel>
                         </Border>
                     </DataTemplate>
                 </ItemsControl.ItemTemplate>
