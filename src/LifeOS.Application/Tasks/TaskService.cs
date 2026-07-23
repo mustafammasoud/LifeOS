@@ -24,21 +24,21 @@ public sealed class TaskService : ITaskService
 
     public Task<List<TaskItem>> GetAllTasksAsync() => _repository.GetAllAsync();
 
-    public async Task<TaskItem> AddTaskAsync(string title, TaskPriority priority = TaskPriority.Medium, DateTime? dueDate = null)
+  public async Task<TaskItem> AddTaskAsync(string title, TaskPriority priority = TaskPriority.Medium, DateTime? dueDate = null, List<string>? tags = null)
+{
+    var task = new TaskItem
     {
-        var task = new TaskItem
-        {
-            Title = title,
-            Priority = priority,
-            DueDate = dueDate,
-            StatisticsDate = DateOnly.FromDateTime(DateTime.Now)
-        };
+        Title = title,
+        Priority = priority,
+        DueDate = dueDate,
+        StatisticsDate = DateOnly.FromDateTime(DateTime.Now),
+        Tags = tags ?? new List<string>()
+    };
 
-        await _repository.AddAsync(task);
-        await _dailyStatistics.RegisterTaskCreatedAsync(task.StatisticsDate);
-        return task;
-    }
-
+    await _repository.AddAsync(task);
+    await _dailyStatistics.RegisterTaskCreatedAsync(task.StatisticsDate);
+    return task;
+}
    public async Task SetCompletedAsync(Guid id, bool isCompleted)
   {
       var task = await _repository.GetByIdAsync(id);

@@ -8,4 +8,5 @@ public interface IPomodoroRepository
     Task<List<PomodoroSession>> GetBySubjectAsync(Guid subjectId);
     Task AddAsync(PomodoroSession session);
     Task<List<PomodoroSession>> GetWeekAsync(DateOnly startDate); 
+    Task<List<PomodoroSession>> GetAllAsync(); 
 }

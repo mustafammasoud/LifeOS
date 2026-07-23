@@ -12,5 +12,6 @@ public interface IStudyService
     Task<int> GetTodayFocusMinutesAsync();
     Task DeleteSubjectAsync(Guid subjectId);
     Task<List<SubjectSummary>> GetSubjectSummariesForWeekAsync(DateOnly startDate);
+    Task<Dictionary<int, int>> GetFocusMinutesByHourAsync();
     
 }

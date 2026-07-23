@@ -85,4 +85,12 @@ public sealed class StudyService : IStudyService
 
     return summaries;
 }
+public async Task<Dictionary<int, int>> GetFocusMinutesByHourAsync()
+{
+    var sessions = await _sessions.GetAllAsync();
+
+    return sessions
+        .GroupBy(s => s.StartedAt.ToLocalTime().Hour)
+        .ToDictionary(g => g.Key, g => g.Sum(s => s.DurationMinutes));
+}
 }
