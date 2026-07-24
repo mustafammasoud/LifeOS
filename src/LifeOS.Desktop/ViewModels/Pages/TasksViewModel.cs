@@ -14,6 +14,8 @@ namespace LifeOS.Desktop.ViewModels.Pages;
 public sealed partial class TasksViewModel : ObservableObject
 {
     private readonly ITaskService _taskService;
+    private readonly IDialogService _dialogService;
+    private bool _weeklyPlanningPrompted;
 
     public Array PriorityOptions { get; } = Enum.GetValues(typeof(TaskPriority));
 
@@ -28,6 +30,13 @@ public sealed partial class TasksViewModel : ObservableObject
     [ObservableProperty] private int _totalCount;
     [ObservableProperty] private int _completedCount;
     [ObservableProperty] private int _remainingCount;
+
+    public TasksViewModel(ITaskService taskService, IDialogService dialogService)
+    {
+        _taskService = taskService;
+        _dialogService = dialogService;
+        _ = LoadAsync();
+    }
 
     private async Task LoadAsync()
     {
@@ -48,6 +57,32 @@ public sealed partial class TasksViewModel : ObservableObject
         RemainingCount = tasks.Count(t => !t.IsCompleted);
 
         ApplyFilter();
+        await MaybeShowWeeklyPlanningAsync(tasks.Count);
+    }
+
+    private async Task MaybeShowWeeklyPlanningAsync(int todayTaskCount)
+    {
+        if (_weeklyPlanningPrompted) return;
+        if (DateTime.Today.DayOfWeek != DayOfWeek.Saturday) return;
+        if (todayTaskCount > 0) return;
+
+        _weeklyPlanningPrompted = true;
+
+        var lastWeekTasks = await _taskService.GetLastWeekTasksAsync();
+        if (lastWeekTasks.Count == 0) return;
+
+        var candidates = lastWeekTasks
+            .GroupBy(t => new { t.Title, t.Priority })
+            .Select(g => new WeeklyPlanningItem { Title = g.Key.Title, Priority = g.Key.Priority })
+            .ToList();
+
+        var selected = await _dialogService.ShowWeeklyPlanningAsync(candidates);
+        if (selected is null || selected.Count == 0) return;
+
+        foreach (var item in selected)
+            await _taskService.AddTaskAsync(item.Title, item.Priority, DateTime.Today);
+
+        await LoadAsync();
     }
 
     private void ApplyFilter()
@@ -96,15 +131,6 @@ public sealed partial class TasksViewModel : ObservableObject
 
         if (App.Services.GetService<StatisticsViewModel>() is { } stats)
             await stats.LoadAsync();
-    }
-
-    private readonly IDialogService _dialogService;
-
-    public TasksViewModel(ITaskService taskService, IDialogService dialogService)
-    {
-        _taskService = taskService;
-        _dialogService = dialogService;
-        _ = LoadAsync();
     }
 
     [RelayCommand]

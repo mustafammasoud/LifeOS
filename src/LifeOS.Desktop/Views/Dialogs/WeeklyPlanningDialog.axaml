@@ -1,0 +1,24 @@
+<UserControl
+    xmlns="https://github.com/avaloniaui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:services="using:LifeOS.Desktop.Services"
+    x:CompileBindings="False"
+    x:Class="LifeOS.Desktop.Views.Dialogs.WeeklyPlanningDialog">
+
+    <StackPanel Spacing="8" MaxHeight="350">
+        <TextBlock Text="Tasks from last week — pick the ones you want to repeat this week:"
+                   TextWrapping="Wrap" Margin="0,0,0,8"
+                   Foreground="{DynamicResource LifeOS.Brush.TextSecondary}" FontSize="13" />
+
+        <ScrollViewer MaxHeight="280">
+            <ItemsControl ItemsSource="{Binding}">
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate x:DataType="services:WeeklyPlanningItem">
+                        <CheckBox IsChecked="{Binding IsSelected}" Content="{Binding Title}" Margin="0,4" />
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+        </ScrollViewer>
+    </StackPanel>
+
+</UserControl>
