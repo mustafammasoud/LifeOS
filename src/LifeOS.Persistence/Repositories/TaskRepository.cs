@@ -57,5 +57,11 @@ public class TaskRepository : ITaskRepository
             .Where(t => t.StatisticsDate == date)
             .ToListAsync();
     }
+    public Task<List<TaskItem>> GetByStatisticsDateRangeAsync(DateOnly start, DateOnly end)
+   {
+       return _context.Tasks
+           .Where(t => t.StatisticsDate >= start && t.StatisticsDate <= end)
+           .ToListAsync();
+   }
     
 }
