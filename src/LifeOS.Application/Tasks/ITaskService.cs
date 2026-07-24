@@ -10,4 +10,5 @@ public interface ITaskService
     Task SetCompletedAsync(Guid id, bool isCompleted);
     Task DeleteTaskAsync(Guid id);
     Task<List<TaskItem>> GetTasksForTodayAsync();
+    Task<List<TaskItem>> GetLastWeekTasksAsync();   
 }

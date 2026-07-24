@@ -11,4 +11,5 @@ public interface ITaskRepository
     Task UpdateAsync(TaskItem task);
     Task DeleteAsync(Guid id);
     Task<List<TaskItem>> GetByStatisticsDateAsync(DateOnly date);
+    Task<List<TaskItem>> GetByStatisticsDateRangeAsync(DateOnly start, DateOnly end);
 }

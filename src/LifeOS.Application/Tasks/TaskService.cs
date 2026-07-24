@@ -75,4 +75,16 @@ public sealed class TaskService : ITaskService
   }
   public Task<List<TaskItem>> GetTasksForTodayAsync()
     => _repository.GetByStatisticsDateAsync(DateOnly.FromDateTime(DateTime.Now));
+
+    public Task<List<TaskItem>> GetLastWeekTasksAsync()
+  {
+      var today = DateOnly.FromDateTime(DateTime.Now);
+      var daysSinceSaturday = ((int)today.DayOfWeek + 1) % 7;
+      var thisWeekStart = today.AddDays(-daysSinceSaturday);
+  
+      var lastWeekStart = thisWeekStart.AddDays(-7);
+      var lastWeekEnd = thisWeekStart.AddDays(-1);
+  
+      return _repository.GetByStatisticsDateRangeAsync(lastWeekStart, lastWeekEnd);
+  }
 }
